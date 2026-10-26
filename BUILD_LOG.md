@@ -117,5 +117,25 @@
 | **Automated Test Coverage** | Pure engine unit tests and full interactive E2E user journey | 70 / 70 tests passing across 13 test suites (`tunnelingEngine.test.ts`, `quantumTunnelingInteractive.test.tsx`, etc.). Verified $T(E) \in [0, 1]$, exponential decay $T(a)$, resonant transmission $T(E > V_0)$, and UI interactivity. | VERIFIED |
 | **Production Build** | `tsc && vite build` | Clean compilation with zero TypeScript errors or warnings. Vite bundle built in 14.8s. | VERIFIED |
 
+---
+
+## 8. Experiment 5: Sodium Lamp Minimum Deviation Grating Verification Log
+
+| Component | Target Spec | Implementation & Evidence | Status |
+|---|---|---|---|
+| **Oblique Incidence Grating Physics** | Complete physical model $(e+d)(\sin i + \sin\theta) = n\lambda$ with $D(i) = i + \theta(i)$ | `src/engine/sodiumGratingEngine.ts`: Calculates exact diffraction angle $\theta(i) = \arcsin\left(\frac{n\lambda}{e+d} - \sin i\right)$, total deviation $D(i) = i + \theta(i)$, and gradient $\frac{dD}{di} = 1 - \frac{\cos i}{\cos\theta}$. Does not reuse normal incidence shortcuts. | VERIFIED |
+| **Minimum Deviation Stationary Point** | Extremum condition $dD/di = 0 \implies i = \theta = D_m / 2$ | At $i = D_m/2$, path difference symmetric $AL + AM = 2(e+d)\sin(D_m/2) = n\lambda$. Stationarity verified by unit test `TC-E5-03` ($\frac{dD}{di} \approx 0$ at $i = 10.026^\circ$ for Yellow 1). | VERIFIED |
+| **Grating Element Conversion** | Manual p. 54: $(e+d) = \frac{2.54 \times 10^{-2}}{N}\text{ m}$ | Computes lines/m ($590,551\text{ lines/m}$) and $(e+d) = 1.69333 \times 10^{-6}\text{ m} = 16,933.3\text{ \AA}$ for $15,000\text{ LPI}$. Verified by unit test `TC-E5-01`. | VERIFIED |
+| **Spectrometer Mechanics & Scales** | Dual verniers $V_1$ and $V_2$ ($180^\circ$ offset), $1\text{ MSD} = 0.5^\circ = 30'$, $30\text{ VSD} = 29\text{ MSD} \implies \text{LC} = 1'$ | `decomposeAngleToVernier()` generates realistic MSR (degrees + minutes), VSC ($0-29$), and Total Reading TR with circular modular wraparound across $0^\circ / 360^\circ$. | VERIFIED |
+| **Observation Table Parity** | Manual p. 55: 1st order spectrum table (2 colors $\times$ 2 verniers $V_1, V_2$ = 4 rows) | Left (a) and Right (b) MSR, VSC, TR, $2D_m = |a - b|$, $D_m = |a - b|/2$, Mean $D_m$, Calculated $\lambda$ in nm and $\text{\AA}$, and percentage error vs reference doublet. | VERIFIED |
+| **Printed Erratum AMB-03 Resolution** | Manual p. 55 table header writes `2Dm = (a-b)/2` | Explicit alert badge in UI explains the printing typo: $2D_m = |a - b|$ and $D_m = |a - b|/2$. The software computes physically sound $D_m$ without silently distorting the math. | VERIFIED |
+| **Sodium Doublet Spectral Lines** | Yellow 1 ($D_1 = 589.6\,\text{nm}$) and Yellow 2 ($D_2 = 589.0\,\text{nm}$) | Yellow 1 $D_m = 20.052^\circ = 20^\circ 3'$, Yellow 2 $D_m = 20.032^\circ = 20^\circ 2'$. Separated by $\Delta D_m \approx 1.25'$, resolvable on a $1'$ spectrometer. Recovered: Yellow 1 ($589.5\,\text{nm}$, $0.01\%$), Yellow 2 ($589.1\,\text{nm}$, $0.01\%$). | VERIFIED |
+| **Interactive Vector Apparatus** | SVG Spectrometer Chassis, Prism Table & Eyepiece Reticle | Independent rotating prism table ($i$), rotating telescope arm, collimator with slit adjustment screw, transmission grating on spirit-leveled table, 4° FOV ocular reticle with moving spectral lines that turn back through minimum deviation extremum. | VERIFIED |
+| **Dual Vernier Magnifiers** | Magnifier views for $V_1$ and $V_2$ ($180^\circ$ offset) | Live readout of MSR (degrees + minutes), VSC ($0-29\text{ div}$), TR, and DMS. | VERIFIED |
+| **Pedagogical Features** | Guided, Exam, Viva, Calculations drawer | 4-step guided progression, exam mode, theory & derivation drawer with LaTeX formulas, one-click CSV export. | VERIFIED |
+| **Automated Test Coverage** | Unit tests + interactive integration test | 78 / 78 tests passing across 15 test suites (`sodiumGratingEngine.test.ts`, `sodiumSpectrometerInteractive.test.tsx`, etc.). Verified turning point, angular conversions, wavelength recovery, and UI interaction. | VERIFIED |
+| **Production Build** | `tsc && vite build` | Clean compilation with zero TypeScript errors or warnings. Vite production bundle built cleanly. | VERIFIED |
+
+
 
 

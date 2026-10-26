@@ -7,4 +7,6 @@ export * from './photodiodeSimulator';
 export * from './electronDiffractionSimulator';
 export * from './quantumGatesSimulator';
 export type { Complex } from './tunnelingSimulator';
+export { sodiumGratingEngine } from './sodiumGratingEngine';
+export type { SodiumSpectralLine, SodiumObservationRow, SodiumSummaryRow } from './sodiumGratingEngine';
 

@@ -173,8 +173,8 @@ export const EXPERIMENTS_DATA: ExperimentMetadata[] = [
     pdfPageRange: 'pp. 53–55',
     printedPageRange: 'pp. 50–52',
     formulaSummary: '2(e+d) sin(Dm / 2) = n λ ⇒ λ = 2(e+d) sin(Dm / 2) / n',
-    isDemoFunctional: false,
-    statusBadge: 'Contract Scaffolded',
+    isDemoFunctional: true,
+    statusBadge: 'Functional Demo',
     tags: ['Cycle 2', 'Optics', 'Minimum Deviation', 'Sodium Doublet', 'Spectroscopy'],
     inconsistencies: [
       'Manual p. 55 Table column header erroneously writes "2Dm= (a-b)/2", when 2Dm = a-b and Dm = (a-b)/2.'
