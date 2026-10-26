@@ -112,8 +112,8 @@ export const EXPERIMENTS_DATA: ExperimentMetadata[] = [
     pdfPageRange: 'pp. 38–44',
     printedPageRange: 'pp. 35–41',
     formulaSummary: 'h = VB × λ × (e / c); Slope = hc / e ⇒ h = Slope × (e / c)',
-    isDemoFunctional: false,
-    statusBadge: 'Contract Scaffolded',
+    isDemoFunctional: true,
+    statusBadge: 'Functional Demo',
     tags: ['Cycle 1', 'Quantum Physics', 'Planck Constant', 'Semiconductors', 'LEDs'],
     precautions: [
       'Current through LED must not exceed 3 mA (2900 μA) to avoid thermal runaway.',
@@ -145,8 +145,8 @@ export const EXPERIMENTS_DATA: ExperimentMetadata[] = [
     pdfPageRange: 'pp. 45–52',
     printedPageRange: 'pp. 42–49',
     formulaSummary: 'T = [1 + (V0² sinh²(κ a)) / (4E(V0 - E))]⁻¹; κ = √(2m(V0 - E) / ħ²)',
-    isDemoFunctional: false,
-    statusBadge: 'Contract Scaffolded',
+    isDemoFunctional: true,
+    statusBadge: 'Functional Demo',
     tags: ['Cycle 1', 'Quantum Mechanics', 'Wavefunction', 'Schrödinger Equation', 'Simulation'],
     vivaQuestions: [
       {

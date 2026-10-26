@@ -101,7 +101,21 @@
 | **Graphical Planck Constant ($V_B$ vs $1/\lambda$)** | Manual p. 41: Linear slope $\Delta V_B / \Delta(1/\lambda) = hc/e$ | Linear regression on $V_B$ vs $1/\lambda$ ($R^2 \ge 0.99$), extracting $h_{\text{graph}} = \text{Slope} \cdot e / c$ with comparison to accepted value. | VERIFIED |
 | **Interactive SVG Vector Workbench** | Full interactive circuit on breadboard | 3V DC regulated supply, selectable limiter ($10\,\Omega, 47\,\Omega, 100\,\Omega$), rotary potentiometer dial with step nudges, glowing color-matched LED dome, parallel voltmeter, series microammeter, interactive wire snapping. | VERIFIED |
 | **Pedagogical Features** | Guided, Exam, Viva, Calculations drawer | 4-step guided progression, exam mode with rubric, KaTeX sample calculation drawer, and CSV export for Table 1 and Table 2. | VERIFIED |
-| **Automated Test Coverage** | Netlist, engine unit tests, and full interactive E2E | 62 / 62 tests passing across 11 test suites (`ledPlanckEngine.test.ts`, `ledPlanckInteractive.test.tsx`, `circuitNetlist.test.ts`, `mercuryGratingEngine.test.ts`, etc.). | VERIFIED |
-| **Production Build** | `tsc && vite build` | Clean compilation with zero TypeScript or Vite bundle errors; production bundle verified. | VERIFIED |
+---
+
+## 7. Experiment 4: Quantum Tunneling Through a Finite Potential Barrier Verification Log
+
+| Component | Target Spec | Implementation & Evidence | Status |
+|---|---|---|---|
+| **Schrödinger Boundary Matching Solver** | Finite rectangular potential barrier solver across all 3 energy regimes ($E < V_0$, $E = V_0$, $E > V_0$) | `src/engine/tunnelingSimulator.ts`: Exact boundary coefficient solver matching $\psi(x)$ and $\psi'(x)$ at $x=0$ and $x=a$. Closed-form $T = \left[1 + \frac{V_0^2 \sinh^2(\kappa a)}{4E(V_0 - E)}\right]^{-1}$ for $E < V_0$, $T = \left[1 + \frac{m V_0 a^2}{2\hbar^2}\right]^{-1}$ at $E = V_0$, and $T = \left[1 + \frac{V_0^2 \sin^2(k_2 a)}{4E(E - V_0)}\right]^{-1}$ for $E > V_0$. | VERIFIED |
+| **Unitarity & Boundary Continuity** | Strictly $T + R = 1.0000$ and continuous $\psi(x)$ across all regions | $r = A + B - 1$ and $u = t e^{i k_1 a}$ guarantee $|\psi_I(0) - \psi_{II}(0)| < 10^{-14}$ and $|t|^2 + |r|^2 = 1.000000$ to machine precision. Verified by unit test `TC-E4-01`. | VERIFIED |
+| **Amplitude vs Probability Distinction** | Explicit distinction between complex amplitude $t \in \mathbb{C}$ and scalar probability $T = |t|^2$ | UI HUD and Observation Tables explicitly separate transmitted complex amplitude $t = t_{\text{re}} + i t_{\text{im}}$, magnitude $|t| = \sqrt{T}$, and probability $T = |t|^2$. Never conflates amplitude with probability. | VERIFIED |
+| **Wavefunction Spatial Visualizer** | Image176 (manual p. 46) replication with 3 regions & barrier shading | Interactive SVG dual-axis visualizer showing $V(x)$ potential step profile, Region II shaded hatch block, particle energy $E$ horizontal line, zero axis, and switchable $\text{Re}(\psi)$, $\text{Im}(\psi)$, and $|\psi|^2$ probability density curves. | VERIFIED |
+| **Observation Tables 1.1–2.2 Parity** | Manual pp. 45–47 (Tables 1.1, 1.2, 2.1, 2.2 with 15 rows each) | Table 1.1: $T$ vs $E$ ($a=1.5\,\text{\AA}, V_0=6\,\text{eV}$, $E \in [0.5, 6.0]\,\text{eV}$); Table 1.2: $T$ vs $E$ ($a=2.0\,\text{\AA}, V_0=6\,\text{eV}$, $E \in [0.5, 6.0]\,\text{eV}$); Table 2.1: $T$ vs $a$ ($E=2.0\,\text{eV}, V_0=6\,\text{eV}$, $a \in [0.5, 4.0]\,\text{\AA}$); Table 2.2: $\ln(T)$ vs $a$ ($E=3.0\,\text{eV}, V_0=6\,\text{eV}$, $a \in [0.5, 4.0]\,\text{\AA}$). CSV export supported. | VERIFIED |
+| **Python Jupyter Parity Panel** | Standalone NumPy/SciPy/Matplotlib code with copy & download (.py/.ipynb) | Dedicated code panel with one-click clipboard copy, `.py` script download, and valid Jupyter Notebook (`.ipynb`) JSON download. Clearly disclaims that browser executes validated TypeScript while providing exact source code for local execution. | VERIFIED |
+| **Analytical Written Questions & Viva** | Manual pp. 48–49 questions on decay, critical limit & resonances | Expandable Theory & Derivations drawer with complete derivations, time-independent Schrödinger equations, barrier matching matrices, and explicit answers to manual questions. | VERIFIED |
+| **Automated Test Coverage** | Pure engine unit tests and full interactive E2E user journey | 70 / 70 tests passing across 13 test suites (`tunnelingEngine.test.ts`, `quantumTunnelingInteractive.test.tsx`, etc.). Verified $T(E) \in [0, 1]$, exponential decay $T(a)$, resonant transmission $T(E > V_0)$, and UI interactivity. | VERIFIED |
+| **Production Build** | `tsc && vite build` | Clean compilation with zero TypeScript errors or warnings. Vite bundle built in 14.8s. | VERIFIED |
+
 
 

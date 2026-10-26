@@ -6,3 +6,5 @@ export * from './ledPlanckSimulator';
 export * from './photodiodeSimulator';
 export * from './electronDiffractionSimulator';
 export * from './quantumGatesSimulator';
+export type { Complex } from './tunnelingSimulator';
+

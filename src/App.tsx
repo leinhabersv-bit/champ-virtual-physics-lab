@@ -4,6 +4,7 @@ import { Dashboard } from './components/dashboard/Dashboard';
 import { SolarCellWorkbench } from './components/workbenches/SolarCellWorkbench';
 import { MercurySpectrometerWorkbench } from './components/workbenches/MercurySpectrometerWorkbench';
 import { LedPlanckWorkbench } from './components/workbenches/LedPlanckWorkbench';
+import { QuantumTunnelingWorkbench } from './components/workbenches/QuantumTunnelingWorkbench';
 import { ScaffoldedWorkbench } from './components/workbenches/ScaffoldedWorkbench';
 import { VivaModal } from './components/dashboard/VivaModal';
 import { Atom, Wifi, WifiOff } from 'lucide-react';
@@ -23,7 +24,12 @@ export function App() {
     }
   });
 
-  const [completedExptIds] = useState<string[]>(['expt-1-solar-cell']);
+  const [completedExptIds] = useState<string[]>([
+    'expt-1-solar-cell',
+    'expt-2-mercury-grating',
+    'expt-3-led-planck',
+    'expt-4-quantum-tunneling'
+  ]);
 
   // Network offline listener for PWA resilience
   useEffect(() => {
@@ -118,6 +124,12 @@ export function App() {
             />
           ) : activeExperiment.id === 'expt-3-led-planck' ? (
             <LedPlanckWorkbench
+              metadata={activeExperiment}
+              onBackToDashboard={() => setActiveExptId(null)}
+              onOpenViva={() => setVivaModalExptId(activeExperiment.id)}
+            />
+          ) : activeExperiment.id === 'expt-4-quantum-tunneling' ? (
+            <QuantumTunnelingWorkbench
               metadata={activeExperiment}
               onBackToDashboard={() => setActiveExptId(null)}
               onOpenViva={() => setVivaModalExptId(activeExperiment.id)}
