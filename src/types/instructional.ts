@@ -64,6 +64,18 @@ export interface DiagramComponentItem {
   }>;
 }
 
+export interface WiringSequenceItem {
+  step: number;
+  from: string;
+  to: string;
+  label: string;
+  wireColor?: string;
+  terminalIdFrom?: string;
+  terminalIdTo?: string;
+  wireElementId?: string;
+  polarityCheck?: string;
+}
+
 export interface ApparatusConfiguration {
   id: string;
   name: string;
@@ -73,6 +85,7 @@ export interface ApparatusConfiguration {
   svgViewBox: string;
   components: DiagramComponentItem[];
   wiringNotes: string[];
+  connectionSequence?: WiringSequenceItem[];
   renderSvg: (highlightedId?: string, isZoomed?: boolean) => React.ReactNode;
 }
 

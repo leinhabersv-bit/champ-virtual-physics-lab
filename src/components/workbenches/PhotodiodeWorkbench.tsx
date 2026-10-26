@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ExperimentMetadata } from '../../types/experiment';
 import {
   photodiodeSimulator,
@@ -10,6 +10,10 @@ import {
   photodiodeNetlistValidator,
   WireConnection,
 } from '../../engine/photodiodeNetlist';
+import { GuidedLabPanel } from '../instructional/GuidedLabPanel';
+import { SetupDiagramPanel } from '../instructional/SetupDiagramPanel';
+import { photodiodeConfigurations, photodiodeSteps } from '../../instructional/procedureDefinitions';
+import { ExperimentProcedure } from '../../types/instructional';
 import {
   Sun,
   Moon,
@@ -43,7 +47,6 @@ export const PhotodiodeWorkbench: React.FC<PhotodiodeWorkbenchProps> = ({
 }) => {
   // Mode: Guided vs Exam vs Viva
   const [activeMode, setActiveMode] = useState<'guided' | 'exam'>('guided');
-  const [guidedStep, setGuidedStep] = useState<number>(1);
 
   // Hardware Controls
   const [powerSupplyVoltage_V, setPowerSupplyVoltage_V] = useState<number>(2.0); // 0.0 to 5.0 V
@@ -53,6 +56,45 @@ export const PhotodiodeWorkbench: React.FC<PhotodiodeWorkbenchProps> = ({
   const [wiringConfiguration, setWiringConfiguration] = useState<WireConnection[]>(
     photodiodeNetlistValidator.getDefaultCorrectWiring()
   );
+
+  // Reusable Guided Lab Instructional System State
+  const [guidedStepIndex, setGuidedStepIndex] = useState<number>(0);
+  const [activeDiagramConfigId, setActiveDiagramConfigId] = useState<string>('photodiode_reverse_bias');
+  const [isDiagramPinned, setIsDiagramPinned] = useState<boolean>(false);
+
+  // Sync diagram configuration when isShielded changes
+  useEffect(() => {
+    if (isShielded || !lampIsOn) {
+      setActiveDiagramConfigId('photodiode_dark_shield');
+    } else {
+      setActiveDiagramConfigId('photodiode_reverse_bias');
+    }
+  }, [isShielded, lampIsOn]);
+
+  const handleSelectDiagramConfig = (cfgId: string) => {
+    setActiveDiagramConfigId(cfgId);
+    if (cfgId === 'photodiode_dark_shield') {
+      setIsShielded(true);
+    } else {
+      setIsShielded(false);
+      setLampIsOn(true);
+    }
+  };
+
+  const photodiodeProcedure: ExperimentProcedure = useMemo(
+    () => ({
+      experimentId: 'expt-6-photodiode',
+      experimentNumber: 6,
+      experimentTitle: 'Photodiode I–V Characteristics',
+      sourcePages: 'pp. 56–59',
+      rubric: { labPerformanceMarks: 7, vivaMarks: 3, totalMarks: 10 },
+      configurations: photodiodeConfigurations,
+      steps: photodiodeSteps,
+    }),
+    []
+  );
+
+  const currentGuidedStep = photodiodeSteps[guidedStepIndex] || photodiodeSteps[0];
   const [activeTableTab, setActiveTableTab] = useState<'table1' | 'table2' | 'table3'>('table1');
   const [showTheoryDrawer, setShowTheoryDrawer] = useState<boolean>(false);
   const [graphMode, setGraphMode] = useState<'iv_curves' | 'intensity'>('iv_curves');
@@ -332,48 +374,35 @@ export const PhotodiodeWorkbench: React.FC<PhotodiodeWorkbenchProps> = ({
         </div>
       </div>
 
-      {/* Guided Mode Stepper Banner */}
-      {activeMode === 'guided' && (
-        <div className="bg-gradient-to-r from-amber-950/40 to-slate-900 border border-amber-900/60 rounded-2xl p-3.5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full bg-amber-600 flex items-center justify-center text-white font-bold shrink-0">
-              {guidedStep}
-            </div>
-            <div>
-              <span className="font-bold text-amber-100 text-xs">
-                {guidedStep === 1 && 'Step 1: Dark Current Characterization (Opaque Shield ON, 0 to 5 V)'}
-                {guidedStep === 2 && 'Step 2: Photocurrent at Fixed Distances (D1 = 10 cm, D2 = 15 cm)'}
-                {guidedStep === 3 && 'Step 3: Photocurrent vs Light Intensity/Distance at Fixed Reverse Bias (1V, 2V, 3V)'}
-                {guidedStep === 4 && 'Step 4: Responsivity (R = Iph / Popt) & Percentage Change (%Δ) Analysis'}
-              </span>
-              <p className="text-amber-300/90 text-[11px] mt-0.5">
-                {guidedStep === 1 && 'Verify reverse bias wiring. Apply opaque shielding box or turn lamp OFF. Vary reverse voltage from 0 to 5 V to record Table 1 dark current ID.'}
-                {guidedStep === 2 && 'Remove shield and switch ON LED lamp. Fix distance at D1 = 10 cm, then D2 = 15 cm. Vary VR from 0 to 5 V and record Table 2.'}
-                {guidedStep === 3 && 'Fix reverse voltage at 1V, 2V, 3V. Vary lamp carriage distance between 5 cm and 20 cm to observe 1/d² intensity dependence in Table 3.'}
-                {guidedStep === 4 && 'Calculate Iph = Iillum - ID, optical power Popt, responsivity R (A/W), and %Δ. Verify linear photocurrent vs optical irradiance.'}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 self-end md:self-auto shrink-0">
-            <button
-              type="button"
-              disabled={guidedStep === 1}
-              onClick={() => setGuidedStep((s) => Math.max(1, s - 1))}
-              className="px-2.5 py-1 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40"
-            >
-              Prev
-            </button>
-            <button
-              type="button"
-              disabled={guidedStep === 4}
-              onClick={() => setGuidedStep((s) => Math.min(4, s + 1))}
-              className="px-3 py-1 text-xs rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold flex items-center gap-1 disabled:opacity-40"
-            >
-              Next Step
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Collapsible Vector Setup Blueprint & Circuit Diagram Panel */}
+      <SetupDiagramPanel
+        configurations={photodiodeConfigurations}
+        activeConfigId={activeDiagramConfigId}
+        onSelectConfig={handleSelectDiagramConfig}
+        highlightedElementId={currentGuidedStep?.apparatusHighlightId}
+        currentStepNumber={currentGuidedStep?.number}
+        isPinned={isDiagramPinned}
+        onTogglePin={setIsDiagramPinned}
+      />
+
+      {/* Guided Lab Instructional System (Beginner / Practice / Exam) */}
+      <GuidedLabPanel
+        procedure={photodiodeProcedure}
+        currentState={{
+          wiringConfiguration,
+          circuitEval,
+          powerSupplyVoltage_V,
+          lampDistance_cm,
+          lampIsOn,
+          isShielded,
+          liveReadings,
+          table1Rows,
+          table2Rows,
+          table3Rows,
+        }}
+        initialMode={activeMode === 'exam' ? 'exam' : 'beginner'}
+        onStepChange={(idx) => setGuidedStepIndex(idx)}
+      />
 
       {/* Main Interactive Stage & Controls Deck */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">

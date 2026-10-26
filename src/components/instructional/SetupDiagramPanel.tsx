@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ApparatusConfiguration } from '../../types/instructional';
 import {
   ZoomIn,
@@ -12,6 +12,10 @@ import {
   X,
   Layers,
   Info,
+  Route,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
 } from 'lucide-react';
 
 export interface SetupDiagramPanelProps {
@@ -44,8 +48,17 @@ export const SetupDiagramPanel: React.FC<SetupDiagramPanelProps> = ({
     activeConfigId || configurations[0]?.id || ''
   );
 
+  useEffect(() => {
+    if (activeConfigId) {
+      setActiveTab(activeConfigId);
+    }
+  }, [activeConfigId]);
+
+  const [isSequenceActive, setIsSequenceActive] = useState<boolean>(false);
+  const [sequenceIndex, setSequenceIndex] = useState<number>(0);
+
   const currentConfig =
-    configurations.find((c) => c.id === (activeConfigId || activeTab)) ||
+    configurations.find((c) => c.id === activeTab) ||
     configurations[0];
 
   const handleSelectTab = (id: string) => {
@@ -74,160 +87,283 @@ export const SetupDiagramPanel: React.FC<SetupDiagramPanelProps> = ({
           </div>
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
-              Apparatus Setup &amp; Circuit Diagram
+              Apparatus Setup &amp; Circuit Diagram: {currentConfig.name}
             </h3>
             <div className="text-[10px] font-mono text-slate-400">
               {currentConfig.sourceManualFigure} (Manual p. {currentConfig.sourceManualPage})
+              {currentConfig.subtitle && <span> • {currentConfig.subtitle}</span>}
             </div>
           </div>
         </div>
 
-        {/* Header Action Controls */}
-        <div className="flex items-center gap-1.5">
-          {/* Multi-configuration tabs if more than 1 */}
-          {configurations.length > 1 && (
-            <div className="flex rounded-lg bg-slate-950 p-0.5 border border-slate-800 mr-1">
-              {configurations.map((cfg) => (
-                <button
-                  key={cfg.id}
-                  type="button"
-                  onClick={() => handleSelectTab(cfg.id)}
-                  aria-pressed={cfg.id === currentConfig.id}
-                  className={`px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors ${
-                    cfg.id === currentConfig.id
-                      ? 'bg-indigo-600 text-white font-semibold'
-                      : 'text-slate-400 hover:text-slate-200'
-                  }`}
+          {/* Header Action Controls */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {/* View Circuit Diagram Dropdown Selector */}
+            {configurations.length > 1 && (
+              <div className="flex items-center gap-1">
+                <label htmlFor="view-circuit-diagram-dropdown" className="text-[10px] text-slate-400 font-mono hidden sm:inline">
+                  Diagram:
+                </label>
+                <select
+                  id="view-circuit-diagram-dropdown"
+                  aria-label="View Circuit Diagram"
+                  value={currentConfig.id}
+                  onChange={(e) => handleSelectTab(e.target.value)}
+                  className="bg-slate-900 border border-slate-700 hover:border-slate-600 text-slate-200 text-xs rounded-lg px-2.5 py-1 focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer transition-colors"
                 >
-                  {cfg.name}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Desktop Pin Button */}
-          {onTogglePin && (
-            <button
-              type="button"
-              onClick={() => onTogglePin(!isPinned)}
-              title={isPinned ? 'Unpin diagram' : 'Pin diagram beside simulator'}
-              aria-label={isPinned ? 'Unpin diagram' : 'Pin diagram'}
-              className={`p-1.5 rounded-lg border text-xs transition-colors hidden md:flex items-center gap-1 ${
-                isPinned
-                  ? 'bg-indigo-950/80 text-indigo-300 border-indigo-700'
-                  : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:text-slate-200'
-              }`}
-            >
-              {isPinned ? <PinOff className="w-3.5 h-3.5" /> : <Pin className="w-3.5 h-3.5" />}
-              <span className="text-[10px] font-mono">{isPinned ? 'Pinned' : 'Pin'}</span>
-            </button>
-          )}
-
-          {/* Maximize Fullscreen Modal Button */}
-          <button
-            type="button"
-            onClick={() => setIsModalOpen(true)}
-            title="Expand diagram modal"
-            aria-label="Expand diagram modal"
-            className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
-          >
-            <Maximize2 className="w-3.5 h-3.5" />
-          </button>
-
-          {/* Collapse / Expand Toggle */}
-          <button
-            type="button"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            aria-expanded={!isCollapsed}
-            aria-label={isCollapsed ? 'Expand diagram panel' : 'Collapse diagram panel'}
-            className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
-          >
-            {isCollapsed ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Collapsible Panel Body */}
-      {!isCollapsed && (
-        <div className="p-4 space-y-3">
-          {/* Diagram Toolbar: Zoom and Current Step Highlight */}
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-            {/* Step Highlight Alert */}
-            {currentStepNumber && (
-              <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-950/60 border border-indigo-800/60 text-indigo-300 text-[11px] font-mono">
-                <span className="inline-block w-2 h-2 rounded-full bg-indigo-400 animate-ping mr-0.5" />
-                Step {currentStepNumber} Active Focus
+                  {configurations.map((cfg) => (
+                    <option key={cfg.id} value={cfg.id}>
+                      {cfg.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
 
-            {/* Zoom Controls */}
-            <div className="flex items-center gap-1 ml-auto bg-slate-950 rounded-lg p-0.5 border border-slate-800">
-              <button
-                type="button"
-                onClick={handleZoomOut}
-                title="Zoom out"
-                aria-label="Zoom out"
-                className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
-              >
-                <ZoomOut className="w-3.5 h-3.5" />
-              </button>
-              <span className="text-[10px] font-mono text-slate-300 px-1.5 min-w-[3rem] text-center">
-                {Math.round(zoomLevel * 100)}%
-              </span>
-              <button
-                type="button"
-                onClick={handleZoomIn}
-                title="Zoom in"
-                aria-label="Zoom in"
-                className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
-              >
-                <ZoomIn className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={handleResetZoom}
-                title="Reset zoom"
-                aria-label="Reset zoom"
-                className="p-1 text-slate-400 hover:text-slate-200 border-l border-slate-800 transition-colors"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* SVG Diagram Canvas */}
-          <div className="relative overflow-hidden rounded-lg bg-slate-950 border border-slate-800/80 min-h-[200px] flex items-center justify-center p-2">
-            <div
-              style={{
-                transform: `scale(${zoomLevel})`,
-                transformOrigin: 'center center',
-                transition: 'transform 0.15s ease-out',
-                width: '100%',
-                maxHeight: '320px',
-              }}
-              className="flex items-center justify-center"
-            >
-              {currentConfig.renderSvg(highlightedElementId, zoomLevel > 1.0)}
-            </div>
-          </div>
-
-          {/* Wiring Notes & Key Connections */}
-          {currentConfig.wiringNotes && currentConfig.wiringNotes.length > 0 && (
-            <div className="rounded-lg bg-slate-950/60 p-3 border border-slate-800 text-[11px] space-y-1.5">
-              <div className="font-semibold text-slate-300 flex items-center gap-1.5 text-xs">
-                <Info className="w-3.5 h-3.5 text-sky-400" />
-                Connection Protocol (per manual):
-              </div>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-1 text-slate-400">
-                {currentConfig.wiringNotes.map((note, idx) => (
-                  <li key={idx} className="flex items-start gap-1.5 font-mono text-[10px]">
-                    <span className="text-indigo-400 font-bold">•</span>
-                    <span>{note}</span>
-                  </li>
+            {/* Multi-configuration tabs for quick switching */}
+            {configurations.length > 1 && (
+              <div className="hidden lg:flex rounded-lg bg-slate-950 p-0.5 border border-slate-800">
+                {configurations.map((cfg) => (
+                  <button
+                    key={cfg.id}
+                    type="button"
+                    onClick={() => handleSelectTab(cfg.id)}
+                    aria-pressed={cfg.id === currentConfig.id}
+                    className={`px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors ${
+                      cfg.id === currentConfig.id
+                        ? 'bg-indigo-600 text-white font-semibold'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    {cfg.name}
+                  </button>
                 ))}
-              </ul>
+              </div>
+            )}
+
+            {/* Show Connection Sequence Demonstration Button */}
+            {currentConfig.connectionSequence && currentConfig.connectionSequence.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSequenceActive(!isSequenceActive);
+                  setSequenceIndex(0);
+                }}
+                title="Visually demonstrate wiring order on circuit diagram"
+                aria-pressed={isSequenceActive}
+                className={`px-2.5 py-1 rounded-lg border text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                  isSequenceActive
+                    ? 'bg-amber-600 text-white border-amber-500 shadow-sm'
+                    : 'bg-indigo-950/70 hover:bg-indigo-900/80 text-indigo-300 border-indigo-700/80'
+                }`}
+              >
+                <Route className="w-3.5 h-3.5" />
+                <span>{isSequenceActive ? 'Hide Wiring Order' : 'Show Connection Sequence'}</span>
+              </button>
+            )}
+
+            {/* Desktop Pin Button */}
+            {onTogglePin && (
+              <button
+                type="button"
+                onClick={() => onTogglePin(!isPinned)}
+                title={isPinned ? 'Unpin diagram' : 'Pin diagram beside simulator'}
+                aria-label={isPinned ? 'Unpin diagram' : 'Pin diagram'}
+                className={`p-1.5 rounded-lg border text-xs transition-colors hidden md:flex items-center gap-1 ${
+                  isPinned
+                    ? 'bg-indigo-950/80 text-indigo-300 border-indigo-700'
+                    : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:text-slate-200'
+                }`}
+              >
+                {isPinned ? <PinOff className="w-3.5 h-3.5" /> : <Pin className="w-3.5 h-3.5" />}
+                <span className="text-[10px] font-mono">{isPinned ? 'Pinned' : 'Pin'}</span>
+              </button>
+            )}
+
+            {/* Maximize Fullscreen Modal Button */}
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              title="Expand diagram modal"
+              aria-label="Expand diagram modal"
+              className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Collapse / Expand Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              aria-expanded={!isCollapsed}
+              aria-label={isCollapsed ? 'Expand diagram panel' : 'Collapse diagram panel'}
+              className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              {isCollapsed ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Collapsible Panel Body */}
+        {!isCollapsed && (
+          <div className="p-4 space-y-3">
+            {/* Show Connection Sequence Stepper HUD */}
+            {isSequenceActive && currentConfig.connectionSequence && currentConfig.connectionSequence.length > 0 && (
+              <div
+                role="region"
+                aria-label="Wiring sequence interactive demonstrator"
+                className="p-3 bg-indigo-950/80 border border-indigo-700 rounded-xl space-y-2 text-xs animate-in fade-in"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 font-bold text-indigo-200">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <span>
+                      Connection Sequence Guide: Wire {sequenceIndex + 1} of {currentConfig.connectionSequence.length}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsSequenceActive(false)}
+                    className="text-slate-400 hover:text-slate-200 text-[11px] font-mono px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800"
+                  >
+                    Close Sequence ✕
+                  </button>
+                </div>
+
+                {(() => {
+                  const seqItem = currentConfig.connectionSequence[sequenceIndex];
+                  if (!seqItem) return null;
+                  return (
+                    <div className="space-y-1 bg-slate-950/70 p-2.5 rounded-lg border border-indigo-900/60">
+                      <div className="text-slate-200 font-semibold text-xs flex items-center justify-between">
+                        <span>{seqItem.label}</span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-900/50 text-indigo-300 border border-indigo-700">
+                          {seqItem.from} → {seqItem.to}
+                        </span>
+                      </div>
+                      {seqItem.polarityCheck && (
+                        <div className="text-[11px] text-emerald-300 font-mono flex items-center gap-1.5">
+                          <span className="text-emerald-400 font-bold">✓</span>
+                          <span>Polarity check: {seqItem.polarityCheck}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                <div className="flex items-center justify-between pt-1 border-t border-indigo-800/60">
+                  <button
+                    type="button"
+                    disabled={sequenceIndex <= 0}
+                    onClick={() => setSequenceIndex((idx) => Math.max(0, idx - 1))}
+                    className="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 text-xs flex items-center gap-1 disabled:opacity-30"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" /> Previous Wire
+                  </button>
+                  <div className="text-[11px] font-mono text-indigo-300">
+                    Step {sequenceIndex + 1} / {currentConfig.connectionSequence.length} (Visual Demo Only)
+                  </div>
+                  <button
+                    type="button"
+                    disabled={sequenceIndex >= currentConfig.connectionSequence.length - 1}
+                    onClick={() =>
+                      setSequenceIndex((idx) =>
+                        Math.min(currentConfig.connectionSequence!.length - 1, idx + 1)
+                      )
+                    }
+                    className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs flex items-center gap-1 disabled:opacity-30"
+                  >
+                    Next Wire <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Diagram Toolbar: Zoom and Current Step Highlight */}
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+              {/* Step Highlight Alert */}
+              {currentStepNumber && (
+                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-950/60 border border-indigo-800/60 text-indigo-300 text-[11px] font-mono">
+                  <span className="inline-block w-2 h-2 rounded-full bg-indigo-400 animate-ping mr-0.5" />
+                  Step {currentStepNumber} Active Focus
+                </div>
+              )}
+
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-1 ml-auto bg-slate-950 rounded-lg p-0.5 border border-slate-800">
+                <button
+                  type="button"
+                  onClick={handleZoomOut}
+                  title="Zoom out"
+                  aria-label="Zoom out"
+                  className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
+                >
+                  <ZoomOut className="w-3.5 h-3.5" />
+                </button>
+                <span className="text-[10px] font-mono text-slate-300 px-1.5 min-w-[3rem] text-center">
+                  {Math.round(zoomLevel * 100)}%
+                </span>
+                <button
+                  type="button"
+                  onClick={handleZoomIn}
+                  title="Zoom in"
+                  aria-label="Zoom in"
+                  className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
+                >
+                  <ZoomIn className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetZoom}
+                  title="Reset zoom"
+                  aria-label="Reset zoom"
+                  className="p-1 text-slate-400 hover:text-slate-200 border-l border-slate-800 transition-colors"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
-          )}
+
+            {/* SVG Diagram Canvas */}
+            <div className="relative overflow-hidden rounded-lg bg-slate-950 border border-slate-800/80 min-h-[200px] flex items-center justify-center p-2">
+              <div
+                style={{
+                  transform: `scale(${zoomLevel})`,
+                  transformOrigin: 'center center',
+                  transition: 'transform 0.15s ease-out',
+                  width: '100%',
+                  maxHeight: '320px',
+                }}
+                className="flex items-center justify-center"
+              >
+                {(() => {
+                  const seqItem =
+                    isSequenceActive && currentConfig.connectionSequence
+                      ? currentConfig.connectionSequence[sequenceIndex]
+                      : null;
+                  const activeHighlight = seqItem?.wireElementId || highlightedElementId;
+                  return currentConfig.renderSvg(activeHighlight, zoomLevel > 1.0);
+                })()}
+              </div>
+            </div>
+
+            {/* Wiring Notes & Key Connections */}
+            {currentConfig.wiringNotes && currentConfig.wiringNotes.length > 0 && (
+              <div className="rounded-lg bg-slate-950/60 p-3 border border-slate-800 text-[11px] space-y-1.5">
+                <div className="font-semibold text-slate-300 flex items-center gap-1.5 text-xs">
+                  <Info className="w-3.5 h-3.5 text-sky-400" />
+                  Connection Protocol (per manual):
+                </div>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-1 text-slate-400">
+                  {currentConfig.wiringNotes.map((note, idx) => (
+                    <li key={idx} className="flex items-start gap-1.5 font-mono text-[10px]">
+                      <span className="text-indigo-400 font-bold">•</span>
+                      <span>{note}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
         </div>
       )}
 

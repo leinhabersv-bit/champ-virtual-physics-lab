@@ -22,7 +22,7 @@ describe('LedPlanckWorkbench Interactive User Journey (Experiment 3)', () => {
     expect(screen.getByText(/Determination of the fundamental constant of quantum physics/i)).toBeInTheDocument();
     expect(screen.getByText(/Semiconductor Diode Circuit & Breadboard Netlist/i)).toBeInTheDocument();
     expect(screen.getAllByText(/SERIES AMMETER/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/3V REGULATED/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/3V REGULATED/i).length).toBeGreaterThanOrEqual(1);
 
     // Netlist status should initially be valid forward bias
     expect(screen.getByText(/Circuit properly wired/i)).toBeInTheDocument();
@@ -129,13 +129,11 @@ describe('LedPlanckWorkbench Interactive User Journey (Experiment 3)', () => {
     const hideStepsBtn = screen.getByRole('button', { name: /Hide Steps/i });
     fireEvent.click(hideStepsBtn);
 
-    // 9. Guided Mode Step Progression
-    const nextStepBtn = screen.getByRole('button', { name: /Next Step/i });
-    fireEvent.click(nextStepBtn); // Step 2
-    expect(screen.getByText(/Step 2: Vary Potentiometer Voltage & Log Diode I-V Readings/i)).toBeInTheDocument();
-    fireEvent.click(nextStepBtn); // Step 3
-    expect(screen.getByText(/Step 3: Fit Linear Tangent to Conduction Region to Find Barrier Potential VB/i)).toBeInTheDocument();
-    fireEvent.click(nextStepBtn); // Step 4
-    expect(screen.getByText(/Step 4: Repeat for 4 LEDs & Determine Planck Constant h from Slope/i)).toBeInTheDocument();
+    // 9. Guided Lab Panel Integration & Mode Navigation
+    expect(screen.getByText(/Instrument Identification & Terminal Polarity Check/i)).toBeInTheDocument();
+    expect(screen.getByText(/WHAT TO DO/i)).toBeInTheDocument();
+    const practiceBtn = screen.getByRole('button', { name: /Practice/i });
+    fireEvent.click(practiceBtn);
+    expect(screen.getByText(/Practice Mode: Complete procedural actions in sequence/i)).toBeInTheDocument();
   });
 });

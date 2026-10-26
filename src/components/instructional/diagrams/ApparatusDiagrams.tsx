@@ -376,12 +376,65 @@ export const LedPlanckCircuitDiagram: React.FC<DiagramRenderProps> = ({ highligh
       </g>
 
       {/* Connections */}
-      <path d="M 90 140 L 150 140" fill="none" stroke="#ef4444" strokeWidth="2" />
-      <path d="M 90 180 L 150 180" fill="none" stroke="#64748b" strokeWidth="2" />
-      <path d="M 210 160 L 230 160" fill="none" stroke="#f59e0b" strokeWidth="2" />
-      <path d="M 270 160 L 298 160" fill="none" stroke="#f59e0b" strokeWidth="2" />
-      <path d="M 342 160 L 390 160" fill="none" stroke="#818cf8" strokeWidth="2" />
-      <path d="M 430 160 L 470 160 L 470 290 L 170 290 L 170 210" fill="none" stroke="#64748b" strokeWidth="2" />
+      <path
+        id="wire-supply-pos"
+        d="M 90 140 L 150 140"
+        fill="none"
+        stroke={isHigh('wire-supply-pos') || isHigh('wire-1') ? '#f59e0b' : '#ef4444'}
+        strokeWidth={isHigh('wire-supply-pos') || isHigh('wire-1') ? 3.5 : 2}
+      />
+      <path
+        id="wire-supply-neg"
+        d="M 90 180 L 150 180"
+        fill="none"
+        stroke={isHigh('wire-supply-neg') || isHigh('wire-3') ? '#f59e0b' : '#3b82f6'}
+        strokeWidth={isHigh('wire-supply-neg') || isHigh('wire-3') ? 3.5 : 2}
+      />
+      <path
+        id="wire-wiper"
+        d="M 210 160 L 230 160"
+        fill="none"
+        stroke={isHigh('wire-wiper') || isHigh('wire-2') ? '#f59e0b' : '#f59e0b'}
+        strokeWidth={isHigh('wire-wiper') || isHigh('wire-2') ? 3.5 : 2}
+      />
+      <path
+        id="wire-resistor"
+        d="M 270 160 L 298 160"
+        fill="none"
+        stroke={isHigh('wire-resistor') || isHigh('wire-4') ? '#f59e0b' : '#f59e0b'}
+        strokeWidth={isHigh('wire-resistor') || isHigh('wire-4') ? 3.5 : 2}
+      />
+      <path
+        id="wire-ammeter"
+        d="M 342 160 L 390 160"
+        fill="none"
+        stroke={isHigh('wire-ammeter') || isHigh('wire-5') ? '#f59e0b' : '#818cf8'}
+        strokeWidth={isHigh('wire-ammeter') || isHigh('wire-5') ? 3.5 : 2}
+      />
+      <path
+        id="wire-led-ground"
+        d="M 430 160 L 470 160 L 470 290 L 170 290 L 170 210"
+        fill="none"
+        stroke={isHigh('wire-led-ground') || isHigh('wire-6') ? '#f59e0b' : '#3b82f6'}
+        strokeWidth={isHigh('wire-led-ground') || isHigh('wire-6') ? 3.5 : 2}
+      />
+      {/* Voltmeter taps */}
+      <path
+        id="wire-voltmeter-pos"
+        d="M 390 160 L 375 160 L 375 245 L 390 245"
+        fill="none"
+        stroke={isHigh('wire-voltmeter') || isHigh('wire-7') ? '#f59e0b' : '#38bdf8'}
+        strokeWidth={isHigh('wire-voltmeter') || isHigh('wire-7') ? 3 : 1.5}
+        strokeDasharray="3 3"
+      />
+      <path
+        id="wire-voltmeter-neg"
+        d="M 430 160 L 445 160 L 445 245 L 430 245"
+        fill="none"
+        stroke={isHigh('wire-voltmeter') || isHigh('wire-8') ? '#f59e0b' : '#38bdf8'}
+        strokeWidth={isHigh('wire-voltmeter') || isHigh('wire-8') ? 3 : 1.5}
+        strokeDasharray="3 3"
+      />
 
       <text x="250" y="305" textAnchor="middle" className="text-[10px] font-mono fill-slate-400">
         BAPHY105 Manual p. 40, Figure 2 — Planck's Constant LED Circuit
@@ -451,27 +504,147 @@ export const QuantumTunnelingBarrierDiagram: React.FC<DiagramRenderProps> = ({ h
   );
 };
 
-export const PhotodiodeCircuitDiagram: React.FC<DiagramRenderProps> = ({ highlightedId }) => {
+export const SolarCellApplianceDiagram: React.FC<DiagramRenderProps> = ({ highlightedId }) => {
   const isHigh = (id: string) => highlightedId === id;
   return (
     <svg viewBox="0 0 500 320" className="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid-pattern-appliance" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" className="text-slate-800/40" strokeWidth="0.5" />
+        </pattern>
+        <marker id="arrow-app" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+        </marker>
+      </defs>
+      <rect width="500" height="320" fill="url(#grid-pattern-appliance)" />
+
+      {/* Title */}
+      <text x="250" y="30" textAnchor="middle" className="text-[13px] font-bold fill-amber-300">
+        Procedure B: Solar Cell Driving Practical Appliance (LED / DC Motor)
+      </text>
+
+      {/* 5W Lamp */}
+      <g id="component-lamp" className={isHigh('component-lamp') ? 'animate-pulse' : ''}>
+        <circle cx="50" cy="165" r="24" fill="#fef08a" fillOpacity="0.2" stroke="#eab308" strokeWidth="2" />
+        <circle cx="50" cy="165" r="12" fill="#fde047" fillOpacity="0.8" stroke="#ca8a04" strokeWidth="1.5" />
+        <text x="50" y="132" textAnchor="middle" className="text-[10px] font-bold fill-amber-300">5W Lamp</text>
+        <line x1="75" y1="165" x2="105" y2="165" stroke="#facc15" strokeWidth="2" strokeDasharray="3 3" markerEnd="url(#arrow-app)" />
+      </g>
+
+      {/* Solar Panel */}
+      <g id="component-solar-cell" className={isHigh('component-solar-cell') ? 'animate-pulse' : ''}>
+        <rect x="110" y="135" width="40" height="60" rx="4" fill="#0f172a" stroke="#38bdf8" strokeWidth="2" />
+        <line x1="120" y1="135" x2="120" y2="195" stroke="#38bdf8" strokeWidth="1" />
+        <line x1="130" y1="135" x2="130" y2="195" stroke="#38bdf8" strokeWidth="1" />
+        <line x1="140" y1="135" x2="140" y2="195" stroke="#38bdf8" strokeWidth="1" />
+        <circle cx="130" cy="135" r="4" fill="#ef4444" />
+        <circle cx="130" cy="195" r="4" fill="#0f172a" stroke="#94a3b8" strokeWidth="1.5" />
+        <text x="130" y="125" textAnchor="middle" className="text-[10px] font-bold fill-rose-400">+</text>
+        <text x="130" y="210" textAnchor="middle" className="text-[10px] font-bold fill-slate-300">-</text>
+        <text x="130" y="225" textAnchor="middle" className="text-[11px] font-semibold fill-slate-200">Solar Array</text>
+      </g>
+
+      {/* 220 Ω Limiting Resistor */}
+      <g id="component-resistor" className={isHigh('component-resistor') ? 'animate-pulse' : ''}>
+        <rect x="205" y="145" width="80" height="30" rx="3" fill="#0f172a" stroke="#a855f7" strokeWidth="2" />
+        <text x="245" y="164" textAnchor="middle" className="text-[10px] font-bold fill-purple-300">220 Ω Limiter</text>
+      </g>
+
+      {/* Appliance: LED / Motor */}
+      <g id="component-appliance" className={isHigh('component-appliance') ? 'animate-pulse' : ''}>
+        <circle cx="370" cy="160" r="28" fill="#0f172a" stroke="#22c55e" strokeWidth="2.5" />
+        <polygon points="360,150 380,160 360,170" fill="#22c55e" />
+        <line x1="380" y1="150" x2="380" y2="170" stroke="#22c55e" strokeWidth="2" />
+        <circle cx="370" cy="160" r="34" fill="none" stroke="#4ade80" strokeWidth="1" strokeDasharray="3 3" />
+        <text x="370" y="120" textAnchor="middle" className="text-[11px] font-bold fill-emerald-300">LED / DC Motor</text>
+        <text x="370" y="205" textAnchor="middle" className="text-[9px] font-mono fill-emerald-200">Appliance Load</text>
+      </g>
+
+      {/* Parallel Voltmeter across Appliance */}
+      <g id="component-voltmeter" className={isHigh('component-voltmeter') ? 'animate-pulse' : ''}>
+        <circle cx="370" cy="255" r="22" fill="#0f172a" stroke="#38bdf8" strokeWidth="2" />
+        <text x="370" y="260" textAnchor="middle" className="text-[13px] font-mono font-bold fill-sky-300">V</text>
+        <text x="370" y="292" textAnchor="middle" className="text-[10px] font-semibold fill-sky-200">Voltmeter</text>
+      </g>
+
+      {/* Wiring paths */}
+      <path
+        d="M 130 135 L 130 90 L 245 90 L 245 145"
+        fill="none"
+        stroke={isHigh('wire-series') ? '#f59e0b' : '#ef4444'}
+        strokeWidth="2.5"
+      />
+      <path
+        d="M 270 160 L 340 160"
+        fill="none"
+        stroke={isHigh('wire-series') ? '#f59e0b' : '#f59e0b'}
+        strokeWidth="2.5"
+      />
+      <path
+        d="M 398 160 L 450 160 L 450 220 L 130 220 L 130 195"
+        fill="none"
+        stroke={isHigh('wire-return') ? '#f59e0b' : '#3b82f6'}
+        strokeWidth="2.5"
+      />
+      {/* Voltmeter taps */}
+      <path d="M 335 160 L 335 255 L 348 255" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="3 3" />
+      <path d="M 405 160 L 405 255 L 392 255" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="3 3" />
+
+      <text x="250" y="308" textAnchor="middle" className="text-[10px] font-mono fill-slate-400">
+        BAPHY105 Manual p. 29 — Procedure B Photovoltaic Appliance Circuit
+      </text>
+    </svg>
+  );
+};
+
+export const PhotodiodeCircuitDiagram: React.FC<DiagramRenderProps & { isShieldedMode?: boolean }> = ({
+  highlightedId,
+  isShieldedMode = false,
+}) => {
+  const isHigh = (id: string) => highlightedId === id;
+  return (
+    <svg viewBox="0 0 500 320" className="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid-pd" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" className="text-slate-800/40" strokeWidth="0.5" />
+        </pattern>
+        <pattern id="shield-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="8" stroke="#475569" strokeWidth="2" strokeOpacity="0.6" />
+        </pattern>
+      </defs>
+      <rect width="500" height="320" fill="url(#grid-pd)" />
+
+      {/* Title */}
+      <text x="250" y="28" textAnchor="middle" className="text-[13px] font-bold fill-amber-300">
+        {isShieldedMode
+          ? 'Table 1: Dark Current ID Measurement (Shielded Condition)'
+          : 'Table 2 & 3: Illuminated Reverse Bias Circuit (Fixed d & Fixed V)'}
+      </text>
+
       {/* 0-30V DC Supply */}
-      <rect x="40" y="110" width="70" height="90" rx="4" fill="#0f172a" stroke="#ef4444" strokeWidth={isHigh('component-supply') ? 3 : 2} />
-      <text x="75" y="145" textAnchor="middle" className="text-[11px] font-bold fill-rose-300">0–30V DC</text>
-      <text x="75" y="160" textAnchor="middle" className="text-[9px] font-mono fill-rose-200">Supply</text>
-      <circle cx="95" cy="130" r="3.5" fill="#ef4444" />
-      <circle cx="95" cy="175" r="3.5" fill="#0f172a" stroke="#94a3b8" strokeWidth="1.5" />
-      <text x="105" y="134" className="text-[10px] font-bold fill-rose-400">+</text>
-      <text x="105" y="179" className="text-[10px] font-bold fill-slate-300">-</text>
+      <g id="component-supply" className={isHigh('component-supply') ? 'animate-pulse' : ''}>
+        <rect x="40" y="110" width="70" height="90" rx="4" fill="#0f172a" stroke="#ef4444" strokeWidth={isHigh('component-supply') ? 3 : 2} />
+        <text x="75" y="145" textAnchor="middle" className="text-[11px] font-bold fill-rose-300">0–30V DC</text>
+        <text x="75" y="160" textAnchor="middle" className="text-[9px] font-mono fill-rose-200">Supply</text>
+        <circle cx="95" cy="130" r="3.5" fill="#ef4444" />
+        <circle cx="95" cy="175" r="3.5" fill="#0f172a" stroke="#94a3b8" strokeWidth="1.5" />
+        <text x="105" y="134" className="text-[10px] font-bold fill-rose-400">+</text>
+        <text x="105" y="179" className="text-[10px] font-bold fill-slate-300">-</text>
+      </g>
 
       {/* 1 kΩ Limiting Resistor */}
-      <rect x="150" y="115" width="45" height="30" rx="3" fill="#0f172a" stroke="#a855f7" strokeWidth={isHigh('component-resistor') ? 3 : 2} />
-      <text x="172" y="134" textAnchor="middle" className="text-[10px] font-bold fill-purple-300">1 kΩ</text>
+      <g id="component-resistor" className={isHigh('component-resistor') ? 'animate-pulse' : ''}>
+        <rect x="150" y="115" width="45" height="30" rx="3" fill="#0f172a" stroke="#a855f7" strokeWidth={isHigh('component-resistor') ? 3 : 2} />
+        <text x="172" y="134" textAnchor="middle" className="text-[10px] font-bold fill-purple-300">1 kΩ</text>
+        <text x="172" y="105" textAnchor="middle" className="text-[9px] font-mono fill-purple-200">Limiter</text>
+      </g>
 
       {/* Microammeter in series */}
-      <circle cx="250" cy="130" r="22" fill="#0f172a" stroke="#818cf8" strokeWidth={isHigh('component-ammeter') ? 3 : 2} />
-      <text x="250" y="135" textAnchor="middle" className="text-[12px] font-mono font-bold fill-indigo-300">µA</text>
-      <text x="250" y="98" textAnchor="middle" className="text-[11px] font-bold fill-indigo-200">µA-Meter</text>
+      <g id="component-ammeter" className={isHigh('component-ammeter') ? 'animate-pulse' : ''}>
+        <circle cx="250" cy="130" r="22" fill="#0f172a" stroke="#818cf8" strokeWidth={isHigh('component-ammeter') ? 3 : 2} />
+        <text x="250" y="135" textAnchor="middle" className="text-[12px] font-mono font-bold fill-indigo-300">µA</text>
+        <text x="250" y="98" textAnchor="middle" className="text-[11px] font-bold fill-indigo-200">µA-Meter (Series)</text>
+      </g>
 
       {/* Photodiode (Strict Reverse Bias: Cathode to +, Anode to -) */}
       <g id="photodiode" className={isHigh('photodiode') ? 'animate-pulse' : ''}>
@@ -479,32 +652,84 @@ export const PhotodiodeCircuitDiagram: React.FC<DiagramRenderProps> = ({ highlig
         {/* Diode symbol pointing left (reverse bias) */}
         <polygon points="358,120 342,130 358,140" fill="#f59e0b" />
         <line x1="342" y1="120" x2="342" y2="140" stroke="#f59e0b" strokeWidth="2" />
-        <text x="330" y="120" className="text-[10px] font-bold fill-amber-400">K (-)</text>
-        <text x="365" y="120" className="text-[10px] font-bold fill-amber-400">A (+)</text>
-        <text x="350" y="95" textAnchor="middle" className="text-[11px] font-bold fill-amber-300">Photodiode</text>
+        <text x="328" y="118" className="text-[9px] font-bold fill-amber-400">K (-)</text>
+        <text x="365" y="118" className="text-[9px] font-bold fill-amber-400">A (+)</text>
+        <text x="350" y="92" textAnchor="middle" className="text-[11px] font-bold fill-amber-300">Photodiode</text>
       </g>
 
-      {/* Optical Lamp with adjustable distance d */}
-      <g id="lamp" className={isHigh('lamp') ? 'animate-pulse' : ''}>
-        <circle cx="350" cy="40" r="16" fill="#fef08a" fillOpacity="0.2" stroke="#eab308" strokeWidth={isHigh('lamp') ? 2.5 : 1.5} />
-        <text x="350" y="15" textAnchor="middle" className="text-[10px] font-bold fill-amber-300">LED Lamp (Dist d)</text>
-        <line x1="350" y1="56" x2="350" y2="100" stroke="#fde047" strokeWidth="2" strokeDasharray="3 2" />
-      </g>
+      {/* Optical Lamp or Dark Shield */}
+      {isShieldedMode ? (
+        <g id="component-shield" className={isHigh('component-shield') ? 'animate-pulse' : ''}>
+          <rect x="315" y="60" width="70" height="95" rx="6" fill="url(#shield-hatch)" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
+          <text x="350" y="50" textAnchor="middle" className="text-[11px] font-bold fill-slate-300">
+            Opaque Dark Shield
+          </text>
+          <text x="350" y="145" textAnchor="middle" className="text-[10px] font-mono fill-emerald-300">
+            [DARK CURRENT ID ONLY]
+          </text>
+        </g>
+      ) : (
+        <g id="lamp" className={isHigh('lamp') ? 'animate-pulse' : ''}>
+          <circle cx="350" cy="48" r="16" fill="#fef08a" fillOpacity="0.2" stroke="#eab308" strokeWidth={isHigh('lamp') ? 2.5 : 1.5} />
+          <text x="350" y="24" textAnchor="middle" className="text-[10px] font-bold fill-amber-300">LED Lamp (Dist d = 10 cm)</text>
+          <line x1="350" y1="64" x2="350" y2="102" stroke="#fde047" strokeWidth="2" strokeDasharray="3 2" />
+        </g>
+      )}
 
       {/* Voltmeter in parallel across photodiode */}
-      <circle cx="350" cy="225" r="22" fill="#0f172a" stroke="#38bdf8" strokeWidth="2" />
-      <text x="350" y="230" textAnchor="middle" className="text-[12px] font-mono font-bold fill-sky-300">V</text>
-      <text x="350" y="262" textAnchor="middle" className="text-[11px] font-bold fill-sky-200">Voltmeter (0–10V)</text>
+      <g id="component-voltmeter" className={isHigh('component-voltmeter') ? 'animate-pulse' : ''}>
+        <circle cx="350" cy="225" r="22" fill="#0f172a" stroke="#38bdf8" strokeWidth={isHigh('component-voltmeter') ? 3 : 2} />
+        <text x="350" y="230" textAnchor="middle" className="text-[12px] font-mono font-bold fill-sky-300">V</text>
+        <text x="350" y="262" textAnchor="middle" className="text-[11px] font-bold fill-sky-200">Voltmeter (0–10V Parallel)</text>
+      </g>
 
       {/* Loop connections */}
-      <path d="M 95 130 L 150 130" fill="none" stroke="#ef4444" strokeWidth="2" />
-      <path d="M 195 130 L 228 130" fill="none" stroke="#ef4444" strokeWidth="2" />
-      <path d="M 272 130 L 326 130" fill="none" stroke="#ef4444" strokeWidth="2" />
-      <path d="M 374 130 L 440 130 L 440 175 L 95 175" fill="none" stroke="#64748b" strokeWidth="2" />
+      <path
+        id="wire-1"
+        d="M 95 130 L 150 130"
+        fill="none"
+        stroke={isHigh('wire-1') ? '#f59e0b' : '#ef4444'}
+        strokeWidth={isHigh('wire-1') ? 3.5 : 2}
+      />
+      <path
+        id="wire-2"
+        d="M 195 130 L 228 130"
+        fill="none"
+        stroke={isHigh('wire-2') ? '#f59e0b' : '#ef4444'}
+        strokeWidth={isHigh('wire-2') ? 3.5 : 2}
+      />
+      <path
+        id="wire-3"
+        d="M 272 130 L 326 130"
+        fill="none"
+        stroke={isHigh('wire-3') ? '#f59e0b' : '#ef4444'}
+        strokeWidth={isHigh('wire-3') ? 3.5 : 2}
+      />
+      <path
+        id="wire-4"
+        d="M 374 130 L 440 130 L 440 175 L 95 175"
+        fill="none"
+        stroke={isHigh('wire-4') ? '#f59e0b' : '#64748b'}
+        strokeWidth={isHigh('wire-4') ? 3.5 : 2}
+      />
 
       {/* Voltmeter taps */}
-      <path d="M 315 130 L 315 225 L 328 225" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="3 3" />
-      <path d="M 385 130 L 385 225 L 372 225" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="3 3" />
+      <path
+        id="wire-5"
+        d="M 315 130 L 315 225 L 328 225"
+        fill="none"
+        stroke={isHigh('wire-5') ? '#f59e0b' : '#38bdf8'}
+        strokeWidth={isHigh('wire-5') ? 3 : 1.5}
+        strokeDasharray="3 3"
+      />
+      <path
+        id="wire-6"
+        d="M 385 130 L 385 225 L 372 225"
+        fill="none"
+        stroke={isHigh('wire-6') ? '#f59e0b' : '#38bdf8'}
+        strokeWidth={isHigh('wire-6') ? 3 : 1.5}
+        strokeDasharray="3 3"
+      />
 
       <text x="250" y="305" textAnchor="middle" className="text-[10px] font-mono fill-slate-400">
         BAPHY105 Manual p. 57, Figure 1 — Photodiode Reverse Bias Circuit
@@ -512,3 +737,4 @@ export const PhotodiodeCircuitDiagram: React.FC<DiagramRenderProps> = ({ highlig
     </svg>
   );
 };
+

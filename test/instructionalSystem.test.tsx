@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   GuidedLabPanel,
   SetupDiagramPanel,
-  PROCEDURES_BY_EXPERIMENT,
   solarCellConfigurations,
 } from '../src/components/instructional';
 import { ExperimentProcedure } from '../src/types/instructional';
@@ -14,7 +13,57 @@ describe('Reusable Instructional & Guided Lab System', () => {
     vi.clearAllMocks();
   });
 
-  const mockProcedure: ExperimentProcedure = PROCEDURES_BY_EXPERIMENT['expt-1-solar-cell'];
+  const mockProcedure: ExperimentProcedure = {
+    experimentId: 'test-procedure',
+    experimentNumber: 1,
+    experimentTitle: 'Test Solar Cell Procedure',
+    sourcePages: 'pp. 22–32',
+    rubric: { labPerformanceMarks: 7, vivaMarks: 3, totalMarks: 10 },
+    configurations: solarCellConfigurations,
+    steps: [
+      {
+        id: 'step_test_1',
+        number: 1,
+        title: 'Action Step 1: Measure Open-Circuit Voltage Voc',
+        shortTask: 'Set lamp distance and measure Voc without load.',
+        targetElementId: 'distance-slider',
+        apparatusHighlightId: 'vm',
+        what: 'Switch on the 5W halogen lamp and place it at exactly 25 cm from the solar panel.',
+        where: 'Look at the illumination ruler and digital voltmeter.',
+        why: 'Voc is the maximum possible voltage generated under zero current draw.',
+        observe: 'The digital voltmeter displays a stable reading of approximately 1.70 to 1.80 V.',
+        mistakes: 'Connecting an ammeter in parallel or keeping the lamp turned off.',
+        hint: 'Set distance to 25 cm and ensure no load resistance is connected across terminals.',
+        validate: (state: any) => {
+          if (!state?.lampOn) {
+            return { isComplete: false, feedback: 'Turn on the 5W lamp first to illuminate the solar panel.' };
+          }
+          if (state?.distance !== 0.25) {
+            return { isComplete: false, feedback: 'Set illumination distance to exactly 25 cm (0.25 m).' };
+          }
+          return { isComplete: true, feedback: 'Voc measured accurately at 25 cm with 10 MΩ high-impedance voltmeter.' };
+        },
+      },
+      {
+        id: 'step_test_2',
+        number: 2,
+        title: 'Action Step 2: Measure Short-Circuit Current Isc',
+        shortTask: 'Connect ammeter in series directly across solar cell.',
+        targetElementId: 'amm',
+        apparatusHighlightId: 'amm',
+        what: 'Connect the microammeter directly across the solar panel terminals.',
+        where: 'Digital microammeter scale.',
+        why: 'Isc provides the maximum photo-generated current under zero external voltage.',
+        observe: 'Current displays between 15 and 25 mA depending on distance.',
+        mistakes: 'Leaving load resistance connected or using reversed polarity.',
+        hint: 'Directly short the solar cell terminals through the current meter.',
+        validate: (state: any) => {
+          if (!state?.lampOn) return { isComplete: false, feedback: 'Turn on lamp.' };
+          return { isComplete: true, feedback: 'Isc measured successfully.' };
+        },
+      },
+    ],
+  };
 
   describe('1. GuidedLabPanel Mode Switching & Persistence', () => {
     it('initializes in Beginner mode and displays 5 core instructional pillars', () => {
@@ -95,7 +144,7 @@ describe('Reusable Instructional & Guided Lab System', () => {
       fireEvent.click(nextBtn);
 
       // Still on step 1
-      expect(screen.getByText(/Action Step 1/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Action Step 1/i).length).toBeGreaterThanOrEqual(1);
     });
 
     it('validates successfully when physical simulator state matches criteria and unlocks Next', () => {
@@ -126,13 +175,13 @@ describe('Reusable Instructional & Guided Lab System', () => {
       fireEvent.click(nextBtn);
 
       // Now on step 2
-      expect(screen.getByText(/Action Step 2/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Action Step 2/i).length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByText(/Short-Circuit Current/i).length).toBeGreaterThanOrEqual(1);
 
       // Back button navigates back to step 1
       const backBtn = screen.getByRole('button', { name: /Back/i });
       fireEvent.click(backBtn);
-      expect(screen.getByText(/Action Step 1/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Action Step 1/i).length).toBeGreaterThanOrEqual(1);
     });
   });
 

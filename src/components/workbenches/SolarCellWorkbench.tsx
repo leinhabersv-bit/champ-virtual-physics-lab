@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ExperimentMetadata } from '../../types/experiment';
 import { Terminal, WireConnection } from '../../types/workbench';
 import {
@@ -13,6 +13,10 @@ import { FormulaPanel } from '../primitives/FormulaPanel';
 import { LabGraph, GraphSeries } from '../primitives/LabGraph';
 import { TerminalPoint } from '../primitives/TerminalPoint';
 import { DraggableWire } from '../primitives/DraggableWire';
+import { GuidedLabPanel } from '../instructional/GuidedLabPanel';
+import { SetupDiagramPanel } from '../instructional/SetupDiagramPanel';
+import { solarCellConfigurations, solarCellSteps } from '../../instructional/procedureDefinitions';
+import { ExperimentProcedure } from '../../types/instructional';
 import {
   Sun,
   Layers,
@@ -45,7 +49,6 @@ export const SolarCellWorkbench: React.FC<SolarCellWorkbenchProps> = ({
 }) => {
   // Mode: Guided vs Exam vs Viva
   const [activeMode, setActiveMode] = useState<'guided' | 'exam' | 'viva'>('guided');
-  const [guidedStep, setGuidedStep] = useState<number>(1);
   const [activeTableTab, setActiveTableTab] = useState<1 | 2 | 3 | 4 | 5>(1);
 
   // Optical Bench State
@@ -64,6 +67,55 @@ export const SolarCellWorkbench: React.FC<SolarCellWorkbenchProps> = ({
 
   // Array Topology
   const [topology, setTopology] = useState<'single' | 'series' | 'parallel'>('single');
+
+  // Reusable Guided Lab Instructional System State
+  const [guidedStepIndex, setGuidedStepIndex] = useState<number>(0);
+  const [activeDiagramConfigId, setActiveDiagramConfigId] = useState<string>('single_cell');
+  const [isDiagramPinned, setIsDiagramPinned] = useState<boolean>(false);
+
+  // Sync diagram configuration when topology or isProcedureB changes
+  useEffect(() => {
+    if (isProcedureB) {
+      setActiveDiagramConfigId('appliance_procedure_b');
+    } else if (topology === 'series') {
+      setActiveDiagramConfigId('series_array');
+    } else if (topology === 'parallel') {
+      setActiveDiagramConfigId('parallel_array');
+    } else {
+      setActiveDiagramConfigId('single_cell');
+    }
+  }, [topology, isProcedureB]);
+
+  const handleSelectDiagramConfig = (cfgId: string) => {
+    setActiveDiagramConfigId(cfgId);
+    if (cfgId === 'appliance_procedure_b' || cfgId === 'appliance_circuit') {
+      setIsProcedureB(true);
+    } else if (cfgId === 'series_array') {
+      setIsProcedureB(false);
+      setTopology('series');
+    } else if (cfgId === 'parallel_array') {
+      setIsProcedureB(false);
+      setTopology('parallel');
+    } else {
+      setIsProcedureB(false);
+      setTopology('single');
+    }
+  };
+
+  const solarCellProcedure: ExperimentProcedure = useMemo(
+    () => ({
+      experimentId: 'expt-1-solar-cell',
+      experimentNumber: 1,
+      experimentTitle: 'Solar Cell Renewable Energy Circuit & Photovoltaic Characteristics',
+      sourcePages: 'pp. 22–32',
+      rubric: { labPerformanceMarks: 7, vivaMarks: 3, totalMarks: 10 },
+      configurations: solarCellConfigurations,
+      steps: solarCellSteps,
+    }),
+    []
+  );
+
+  const currentGuidedStep = solarCellSteps[guidedStepIndex] || solarCellSteps[0];
 
   // Circuit Wiring State
   const [selectedTerminal, setSelectedTerminal] = useState<Terminal | null>(null);
@@ -458,50 +510,37 @@ export const SolarCellWorkbench: React.FC<SolarCellWorkbenchProps> = ({
         </div>
       </div>
 
-      {/* Guided Mode Prompt Banner */}
-      {activeMode === 'guided' && (
-        <div className="bg-indigo-950/40 border border-indigo-800/60 rounded-xl p-3 shadow-md flex items-center justify-between no-print">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow">
-              {guidedStep}
-            </div>
-            <div className="text-xs">
-              <span className="font-bold text-indigo-200 text-sm">
-                {guidedStep === 1 && 'Step 1: Switch ON 5W Lamp & Verify Optical Illumination'}
-                {guidedStep === 2 && 'Step 2: Measure Open-Circuit Voltage (Voc) and Short-Circuit Current (Isc)'}
-                {guidedStep === 3 && 'Step 3: Connect Circuit & Sweep All 13 Resistance Rows'}
-                {guidedStep === 4 && 'Step 4: Repeat for Distance 2 (Least Distance), Series & Parallel Arrays'}
-                {guidedStep === 5 && 'Step 5: Test Procedure B Practical Appliance (LED / Motor) Variant'}
-              </span>
-              <p className="text-slate-400 text-xs mt-0.5">
-                {guidedStep === 1 && 'Verify that the 5W lamp is ON. Calibrate the distance to 25 cm for Table 1 and observe the lux reading.'}
-                {guidedStep === 2 && 'Connect the voltmeter directly across the solar cell to record Voc, then use ammeter to measure Isc.'}
-                {guidedStep === 3 && 'Form the complete closed loop: Solar Cell -> Ammeter -> Load Resistor -> Solar Cell. Step through 0.1 to 10 kΩ.'}
-                {guidedStep === 4 && 'Switch table tabs above to populate Tables 2, 3, and 4. Compare series vs parallel voltage and current.'}
-                {guidedStep === 5 && 'Switch to Procedure B to test glowing LEDs and note the role of current-limiting resistors.'}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={guidedStep <= 1}
-              onClick={() => setGuidedStep(s => s - 1)}
-              className="px-2.5 py-1 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30"
-            >
-              Previous
-            </button>
-            <button
-              type="button"
-              disabled={guidedStep >= 5}
-              onClick={() => setGuidedStep(s => s + 1)}
-              className="px-3 py-1 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold flex items-center gap-1 disabled:opacity-30"
-            >
-              Next Step
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Collapsible Vector Setup Blueprint & Circuit Diagram Panel */}
+      <SetupDiagramPanel
+        configurations={solarCellConfigurations}
+        activeConfigId={activeDiagramConfigId}
+        onSelectConfig={handleSelectDiagramConfig}
+        highlightedElementId={currentGuidedStep?.apparatusHighlightId}
+        currentStepNumber={currentGuidedStep?.number}
+        isPinned={isDiagramPinned}
+        onTogglePin={setIsDiagramPinned}
+      />
+
+      {/* Guided Lab Instructional System (Beginner / Practice / Exam) */}
+      <GuidedLabPanel
+        procedure={solarCellProcedure}
+        currentState={{
+          lampIsOn,
+          distance,
+          loadResistance: activeResistanceOhm,
+          topology,
+          isProcedureB,
+          wires,
+          circuitAnalysis,
+          table1Data,
+          table2Data,
+          table3Data,
+          table4Data,
+          hasCalculatedResults: Boolean(table1Data?.rows?.length >= 5),
+        }}
+        initialMode={activeMode === 'exam' ? 'exam' : 'beginner'}
+        onStepChange={(idx) => setGuidedStepIndex(idx)}
+      />
 
       {/* Main Vector Apparatus & Circuit Workbench */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">

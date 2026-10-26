@@ -13,6 +13,10 @@ import { Instrument } from '../primitives/Instrument';
 import { LabGraph, GraphSeries } from '../primitives/LabGraph';
 import { TerminalPoint } from '../primitives/TerminalPoint';
 import { DraggableWire } from '../primitives/DraggableWire';
+import { GuidedLabPanel } from '../instructional/GuidedLabPanel';
+import { SetupDiagramPanel } from '../instructional/SetupDiagramPanel';
+import { ledPlanckConfigurations, ledPlanckSteps } from '../../instructional/procedureDefinitions';
+import { ExperimentProcedure } from '../../types/instructional';
 import {
   Zap,
   ArrowLeft,
@@ -44,9 +48,27 @@ export const LedPlanckWorkbench: React.FC<LedPlanckWorkbenchProps> = ({
 }) => {
   // Mode switcher: Guided vs Exam
   const [activeMode, setActiveMode] = useState<'guided' | 'exam' | 'viva'>('guided');
-  const [guidedStep, setGuidedStep] = useState<number>(1);
   const [activeTableTab, setActiveTableTab] = useState<'table1' | 'table2'>('table1');
   const [activeGraphTab, setActiveGraphTab] = useState<'iv' | 'planck'>('iv');
+
+  // Reusable Guided Lab Instructional System State
+  const [guidedStepIndex, setGuidedStepIndex] = useState<number>(0);
+  const [isDiagramPinned, setIsDiagramPinned] = useState<boolean>(false);
+
+  const ledPlanckProcedure: ExperimentProcedure = useMemo(
+    () => ({
+      experimentId: 'expt-3-led-planck',
+      experimentNumber: 3,
+      experimentTitle: "Planck's Constant via Semiconductor LEDs",
+      sourcePages: 'pp. 38–44',
+      rubric: { labPerformanceMarks: 7, vivaMarks: 3, totalMarks: 10 },
+      configurations: ledPlanckConfigurations,
+      steps: ledPlanckSteps,
+    }),
+    []
+  );
+
+  const currentGuidedStep = ledPlanckSteps[guidedStepIndex] || ledPlanckSteps[0];
 
   // Circuit Hardware State
   const [powerOn, setPowerOn] = useState<boolean>(true);
@@ -440,48 +462,36 @@ export const LedPlanckWorkbench: React.FC<LedPlanckWorkbenchProps> = ({
         </div>
       </div>
 
-      {/* Guided Instructions Banner */}
-      {activeMode === 'guided' && (
-        <div className="bg-indigo-950/40 border border-indigo-800/60 rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs text-indigo-200 no-print">
-          <div className="flex items-start gap-2.5">
-            <div className="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold shrink-0">
-              {guidedStep}
-            </div>
-            <div>
-              <span className="font-bold text-indigo-100">
-                {guidedStep === 1 && 'Step 1: Check Circuit Connections (Series Ammeter, Parallel Voltmeter)'}
-                {guidedStep === 2 && 'Step 2: Vary Potentiometer Voltage & Log Diode I-V Readings'}
-                {guidedStep === 3 && 'Step 3: Fit Linear Tangent to Conduction Region to Find Barrier Potential VB'}
-                {guidedStep === 4 && 'Step 4: Repeat for 4 LEDs & Determine Planck Constant h from Slope (VB vs 1/λ)'}
-              </span>
-              <p className="text-indigo-300 text-[11px] mt-0.5">
-                {guidedStep === 1 && 'Ensure 3V DC supply, 47Ω limiter, potentiometer, series ammeter, and parallel voltmeter are wired properly.'}
-                {guidedStep === 2 && 'Rotate the potentiometer dial to vary voltage across the LED from 0V to ~3V. Current turns on near barrier potential.'}
-                {guidedStep === 3 && 'Select points on the upper linear segment (I > I_max/2). The tangent extrapolates to the X-axis intercept VB.'}
-                {guidedStep === 4 && 'Use h = e·VB·λ/c and verify agreement with the slope of VB vs 1/λ (Manual pp. 41-42).'}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 self-end md:self-auto shrink-0">
-            <button
-              type="button"
-              disabled={guidedStep === 1}
-              onClick={() => setGuidedStep((s) => Math.max(1, s - 1))}
-              className="px-2.5 py-1 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40"
-            >
-              Prev
-            </button>
-            <button
-              type="button"
-              disabled={guidedStep === 4}
-              onClick={() => setGuidedStep((s) => Math.min(4, s + 1))}
-              className="px-3 py-1 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold flex items-center gap-1 disabled:opacity-40"
-            >
-              Next Step
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Collapsible Vector Setup Blueprint & Circuit Diagram Panel */}
+      <SetupDiagramPanel
+        configurations={ledPlanckConfigurations}
+        activeConfigId="led_circuit"
+        highlightedElementId={currentGuidedStep?.apparatusHighlightId}
+        currentStepNumber={currentGuidedStep?.number}
+        isPinned={isDiagramPinned}
+        onTogglePin={setIsDiagramPinned}
+      />
+
+      {/* Guided Lab Instructional System (Beginner / Practice / Exam) */}
+      <GuidedLabPanel
+        procedure={ledPlanckProcedure}
+        currentState={{
+          wires,
+          circuitAnalysis,
+          powerOn,
+          selectedColor,
+          potentiometerRatio,
+          currentLimitingResistor,
+          isReverseBiased,
+          table1Data,
+          extractedVBs,
+          barrierPotential: extractedVBs[selectedColor],
+          hasFittedTangent: true,
+          completedLedsCount: Object.values(extractedVBs).filter((v) => v > 0).length,
+        }}
+        initialMode={activeMode === 'exam' ? 'exam' : 'beginner'}
+        onStepChange={(idx) => setGuidedStepIndex(idx)}
+      />
 
       {/* Main Vector Circuit Workbench & Breadboard Area */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">

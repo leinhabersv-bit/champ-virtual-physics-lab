@@ -24,7 +24,7 @@ describe('PhotodiodeWorkbench Interactive User Journey (Experiment 6)', () => {
       screen.getByText(/\[REVERSE-BIAS PHOTOCONDUCTIVE MODE • TRIPLE PROCEDURE\]/i)
     ).toBeInTheDocument();
     expect(screen.getByText(/Optoelectronic Breadboard & Photodiode Testbench/i)).toBeInTheDocument();
-    expect(screen.getByText(/0-30V DC SUPPLY/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/0-30V DC SUPPLY/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(/MICROAMMETER \(0-100µA\)/i)).toBeInTheDocument();
     expect(screen.getByText(/VOLTMETER \(0-10V\)/i)).toBeInTheDocument();
     expect(screen.getByText(/R = 1 kΩ/i)).toBeInTheDocument();
@@ -52,7 +52,7 @@ describe('PhotodiodeWorkbench Interactive User Journey (Experiment 6)', () => {
     const shieldToggleBtn = screen.getByRole('button', { name: /Shield: OFF/i });
     fireEvent.click(shieldToggleBtn);
     expect(screen.getByText(/Shield: ON/i)).toBeInTheDocument();
-    expect(screen.getByText(/DARK SHIELD/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/DARK SHIELD/i).length).toBeGreaterThanOrEqual(1);
     fireEvent.click(screen.getByRole('button', { name: /Shield: ON/i }));
     expect(screen.getByText(/Shield: OFF/i)).toBeInTheDocument();
 
@@ -133,15 +133,12 @@ describe('PhotodiodeWorkbench Interactive User Journey (Experiment 6)', () => {
     const closeTheoryBtn = screen.getByRole('button', { name: /Close/i });
     fireEvent.click(closeTheoryBtn);
 
-    // 10. Test Guided Mode Step Navigation
-    expect(screen.getByText(/Step 1: Dark Current Characterization/i)).toBeInTheDocument();
-    const nextStepBtn = screen.getByRole('button', { name: /Next Step/i });
-    fireEvent.click(nextStepBtn);
-    expect(screen.getByText(/Step 2: Photocurrent at Fixed Distances/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Next Step/i }));
-    expect(screen.getByText(/Step 3: Photocurrent vs Light Intensity\/Distance/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Next Step/i }));
-    expect(screen.getByText(/Step 4: Responsivity \(R = Iph \/ Popt\) & Percentage Change/i)).toBeInTheDocument();
+    // 10. Test Guided Lab Panel Integration & Mode Navigation
+    expect(screen.getByText(/Instrument Identification & Reverse-Bias Terminals/i)).toBeInTheDocument();
+    expect(screen.getByText(/WHAT TO DO/i)).toBeInTheDocument();
+    const practiceBtn = screen.getByRole('button', { name: /Practice/i });
+    fireEvent.click(practiceBtn);
+    expect(screen.getByText(/Practice Mode: Complete procedural actions in sequence/i)).toBeInTheDocument();
 
     // 11. Test Reset All Tables
     const resetTablesBtn = screen.getByRole('button', { name: /Reset All Tables/i });
