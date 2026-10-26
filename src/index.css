@@ -31,6 +31,52 @@
   background: #475569;
 }
 
+/* Orbital Rings Animation (Manus Hero Visual Accent) */
+@keyframes orbital-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbital-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes orbital-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.02);
+  }
+}
+
+.animate-orbital-1 {
+  animation: orbital-spin 28s linear infinite;
+}
+
+.animate-orbital-2 {
+  animation: orbital-spin-reverse 42s linear infinite;
+}
+
+.animate-orbital-3 {
+  animation: orbital-spin 60s linear infinite;
+}
+
+.animate-orbital-pulse {
+  animation: orbital-pulse 6s ease-in-out infinite;
+}
+
 /* Print styling for laboratory reports */
 @media print {
   body {
@@ -50,3 +96,4 @@
     box-shadow: none !important;
   }
 }
+

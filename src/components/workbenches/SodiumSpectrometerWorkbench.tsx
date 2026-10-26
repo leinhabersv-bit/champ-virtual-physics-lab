@@ -25,6 +25,9 @@ import {
   RotateCcw,
   Maximize2,
 } from 'lucide-react';
+import { SetupDiagramPanel } from '../instructional/SetupDiagramPanel';
+import { sodiumConfigurations } from '../../instructional/procedureDefinitions';
+import { recordExperimentPractice } from '../../services/studentProgress';
 
 interface SodiumSpectrometerWorkbenchProps {
   metadata: ExperimentMetadata;
@@ -57,6 +60,8 @@ export const SodiumSpectrometerWorkbench: React.FC<SodiumSpectrometerWorkbenchPr
   const [showCalculationsDrawer, setShowCalculationsDrawer] = useState<boolean>(false);
   const [activeSide, setActiveSide] = useState<'left' | 'right'>('left');
   const [selectedTargetLine, setSelectedTargetLine] = useState<'yellow_1' | 'yellow_2'>('yellow_1');
+  const [activeDiagramConfigId, setActiveDiagramConfigId] = useState<string>('minimum_deviation');
+  const [isDiagramPinned, setIsDiagramPinned] = useState<boolean>(false);
 
   // Grating physical element
   const gratingElement_m = useMemo(
@@ -288,6 +293,10 @@ export const SodiumSpectrometerWorkbench: React.FC<SodiumSpectrometerWorkbenchPr
   };
 
   const handleExportCSV = () => {
+    recordExperimentPractice('expt-5-sodium-grating', {
+      recordedRowsCount: observationRows.length,
+      summary: 'Sodium yellow doublet D1 and D2 minimum deviation measurements recorded',
+    });
     let csv = 'Colour,Vernier,Left MSR,Left VSC,Left TR (deg),Right MSR,Right VSC,Right TR (deg),2Dm (deg),Dm (deg),Wavelength (nm),Wavelength (A),Error (%)\n';
     observationRows.forEach((r) => {
       csv += `"${r.colorName}","${r.vernier}","${r.leftReading.msr_degrees_part}° ${r.leftReading.msr_minutes_part}'",${r.leftReading.vsc},${r.leftReading.totalReading_deg.toFixed(4)},"${r.rightReading.msr_degrees_part}° ${r.rightReading.msr_minutes_part}'",${r.rightReading.vsc},${r.rightReading.totalReading_deg.toFixed(4)},${r.minimumDeviation_2Dm_deg.toFixed(4)},${r.minimumDeviation_Dm_deg.toFixed(4)},${r.calculatedWavelength_nm},${r.calculatedWavelength_Angstrom},${r.percentageError}\n`;
@@ -435,6 +444,15 @@ export const SodiumSpectrometerWorkbench: React.FC<SodiumSpectrometerWorkbenchPr
           </div>
         </div>
       )}
+
+      {/* Collapsible Vector Setup Blueprint & Minimum Deviation Spectrometer Panel */}
+      <SetupDiagramPanel
+        configurations={sodiumConfigurations}
+        activeConfigId={activeDiagramConfigId}
+        onSelectConfig={setActiveDiagramConfigId}
+        isPinned={isDiagramPinned}
+        onTogglePin={setIsDiagramPinned}
+      />
 
       {/* Main Interactive Spectrometer Studio Area */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">

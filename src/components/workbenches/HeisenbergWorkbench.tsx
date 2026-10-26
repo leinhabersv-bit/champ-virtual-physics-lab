@@ -30,6 +30,9 @@ import {
   Maximize2,
   BookOpen,
 } from 'lucide-react';
+import { SetupDiagramPanel } from '../instructional/SetupDiagramPanel';
+import { heisenbergConfigurations } from '../../instructional/procedureDefinitions';
+import { recordExperimentPractice } from '../../services/studentProgress';
 
 interface HeisenbergWorkbenchProps {
   metadata: ExperimentMetadata;
@@ -60,6 +63,8 @@ export const HeisenbergWorkbench: React.FC<HeisenbergWorkbenchProps> = ({
   const [showTheoryModal, setShowTheoryModal] = useState<boolean>(false);
   const [showAmbiguityModal, setShowAmbiguityModal] = useState<boolean>(false);
   const [showSafetyModal, setShowSafetyModal] = useState<boolean>(false);
+  const [activeDiagramConfigId, setActiveDiagramConfigId] = useState<string>('single_slit_bench');
+  const [isDiagramPinned, setIsDiagramPinned] = useState<boolean>(false);
 
   // Observation Tables State
   const [table1Rows, setTable1Rows] = useState<MicrometerScanRow[]>(() =>
@@ -73,6 +78,13 @@ export const HeisenbergWorkbench: React.FC<HeisenbergWorkbenchProps> = ({
   const [table3Rows, setTable3Rows] = useState<UncertaintyVerificationRow[]>(() =>
     generateTable3Uncertainty([40.0, 80.0, 120.0], 1000.0, 650.0)
   );
+
+  React.useEffect(() => {
+    recordExperimentPractice(metadata.id, {
+      completedSteps: [guidedStep],
+      recordedRowsCount: table1Rows.length + table2Rows.length + table3Rows.length,
+    });
+  }, [metadata.id, guidedStep, table1Rows.length, table2Rows.length, table3Rows.length]);
 
   // Live simulation calculations
   const liveReadings = useMemo(() => {
@@ -443,6 +455,15 @@ export const HeisenbergWorkbench: React.FC<HeisenbergWorkbenchProps> = ({
           </div>
         </div>
       )}
+
+      {/* Collapsible Diagram & Setup Reference */}
+      <SetupDiagramPanel
+        configurations={heisenbergConfigurations}
+        activeConfigId={activeDiagramConfigId}
+        onSelectConfig={setActiveDiagramConfigId}
+        isPinned={isDiagramPinned}
+        onTogglePin={() => setIsDiagramPinned((prev) => !prev)}
+      />
 
       {/* Main Interactive Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

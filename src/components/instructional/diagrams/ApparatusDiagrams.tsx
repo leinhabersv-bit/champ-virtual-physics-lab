@@ -738,3 +738,387 @@ export const PhotodiodeCircuitDiagram: React.FC<DiagramRenderProps & { isShielde
   );
 };
 
+// ============================================================================
+// EXPERIMENT 5: SODIUM SPECTRUM (MINIMUM DEVIATION METHOD)
+// ============================================================================
+export const SodiumMinimumDeviationDiagram: React.FC<DiagramRenderProps> = ({ highlightedId }) => {
+  const isHigh = (id: string) => highlightedId === id;
+  return (
+    <svg viewBox="0 0 500 320" className="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid-sodium" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" className="text-slate-800/40" strokeWidth="0.5" />
+        </pattern>
+        <marker id="arrow-sodium" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#facc15" />
+        </marker>
+      </defs>
+      <rect width="500" height="320" fill="url(#grid-sodium)" />
+
+      {/* Title */}
+      <text x="250" y="26" textAnchor="middle" className="text-[13px] font-bold fill-amber-300">
+        Spectrometer Setup: Minimum Deviation Method (Sodium D1 &amp; D2 Doublet)
+      </text>
+
+      {/* Sodium Lamp Source */}
+      <g id="sodium-lamp" className={isHigh('sodium-lamp') ? 'animate-pulse' : ''}>
+        <circle cx="50" cy="160" r="26" fill="#fef08a" fillOpacity="0.15" stroke="#eab308" strokeWidth="2" />
+        <circle cx="50" cy="160" r="14" fill="#facc15" fillOpacity="0.8" stroke="#ca8a04" strokeWidth="1.5" />
+        <text x="50" y="125" textAnchor="middle" className="text-[10px] font-bold fill-amber-300">Sodium (Na) Lamp</text>
+        <text x="50" y="200" textAnchor="middle" className="text-[9px] font-mono fill-amber-200">589.0 &amp; 589.6 nm</text>
+      </g>
+
+      {/* Collimator */}
+      <g id="collimator" className={isHigh('collimator') ? 'animate-pulse' : ''}>
+        <rect x="95" y="145" width="85" height="30" rx="3" fill="#0f172a" stroke="#64748b" strokeWidth="2" />
+        <line x1="95" y1="160" x2="180" y2="160" stroke="#facc15" strokeWidth="2" strokeDasharray="4 2" />
+        <text x="137" y="140" textAnchor="middle" className="text-[10px] font-semibold fill-slate-300">Collimator (Fixed)</text>
+        <text x="137" y="190" textAnchor="middle" className="text-[9px] font-mono fill-slate-400">Parallel Beam</text>
+      </g>
+
+      {/* Prism / Grating Table at Minimum Deviation */}
+      <g id="prism-table" className={isHigh('prism-table') ? 'animate-pulse' : ''}>
+        <circle cx="250" cy="160" r="50" fill="#090d16" stroke="#d49a3e" strokeWidth="2.5" />
+        {/* Grating Element inside */}
+        <line x1="250" y1="125" x2="250" y2="195" stroke="#f59e0b" strokeWidth="4" />
+        <text x="250" y="105" textAnchor="middle" className="text-[11px] font-bold fill-amber-300">Grating / Prism Table</text>
+        <text x="250" y="222" textAnchor="middle" className="text-[9px] font-mono fill-amber-200">Table Rotation θ_table</text>
+
+        {/* Vernier V1 & V2 callouts */}
+        <g id="vernier-v1" className={isHigh('vernier-v1') ? 'animate-pulse' : ''}>
+          <rect x="235" y="112" width="30" height="12" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.5" />
+          <text x="250" y="121" textAnchor="middle" className="text-[8px] font-mono font-bold fill-sky-300">V1</text>
+        </g>
+        <g id="vernier-v2" className={isHigh('vernier-v2') ? 'animate-pulse' : ''}>
+          <rect x="235" y="196" width="30" height="12" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.5" />
+          <text x="250" y="205" textAnchor="middle" className="text-[8px] font-mono font-bold fill-sky-300">V2</text>
+        </g>
+      </g>
+
+      {/* Direct ray & Diffracted rays at Minimum Deviation Angle D */}
+      <line x1="180" y1="160" x2="250" y2="160" stroke="#facc15" strokeWidth="2.5" markerEnd="url(#arrow-sodium)" />
+      {/* Diffracted path turned by angle D */}
+      <path d="M 250 160 L 370 95" fill="none" stroke="#facc15" strokeWidth="2.5" markerEnd="url(#arrow-sodium)" />
+      {/* Direct ray reference */}
+      <line x1="250" y1="160" x2="380" y2="160" stroke="#64748b" strokeWidth="1.5" strokeDasharray="4 3" />
+
+      {/* Angle of Minimum Deviation Arc */}
+      <path d="M 310 160 A 60 60 0 0 0 302 132" fill="none" stroke="#38bdf8" strokeWidth="2" strokeDasharray="2 2" />
+      <text x="325" y="142" className="text-[11px] font-mono font-bold fill-sky-300">D_min</text>
+
+      {/* Movable Telescope at Minimum Deviation */}
+      <g id="telescope" className={isHigh('telescope') ? 'animate-pulse' : ''}>
+        <g transform="translate(370, 95) rotate(-28)">
+          <rect x="0" y="-14" width="80" height="28" rx="3" fill="#0f172a" stroke="#818cf8" strokeWidth="2" />
+          <line x1="0" y1="0" x2="80" y2="0" stroke="#facc15" strokeWidth="1.5" />
+          <circle cx="75" cy="0" r="6" fill="#38bdf8" fillOpacity="0.4" />
+        </g>
+        <text x="430" y="55" textAnchor="middle" className="text-[10px] font-bold fill-indigo-300">Telescope (Crosswire)</text>
+        <text x="430" y="70" textAnchor="middle" className="text-[9px] font-mono fill-emerald-300">Turning Point (Extremum)</text>
+      </g>
+
+      {/* Turning point explanation badge */}
+      <rect x="70" y="245" width="360" height="45" rx="6" fill="#0f172a" stroke="#d49a3e" strokeWidth="1" strokeOpacity="0.6" />
+      <text x="250" y="262" textAnchor="middle" className="text-[10px] font-medium fill-slate-200">
+        Turning Point Rule: As table rotates, spectral line moves, stops, and reverses direction.
+      </text>
+      <text x="250" y="278" textAnchor="middle" className="text-[10px] font-mono fill-amber-300">
+        Lock telescope exactly at this turning point: 2 sin(D/2) = n · N · λ
+      </text>
+
+      <text x="250" y="306" textAnchor="middle" className="text-[10px] font-mono fill-slate-400">
+        BAPHY105 Manual pp. 48–53 — Minimum Deviation Determination of Wavelengths
+      </text>
+    </svg>
+  );
+};
+
+// ============================================================================
+// EXPERIMENT 7: ELECTRON DIFFRACTION (DE BROGLIE & BRAGG RINGS)
+// ============================================================================
+export const ElectronDiffractionDiagram: React.FC<DiagramRenderProps> = ({ highlightedId }) => {
+  const isHigh = (id: string) => highlightedId === id;
+  return (
+    <svg viewBox="0 0 500 320" className="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid-ed" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" className="text-slate-800/40" strokeWidth="0.5" />
+        </pattern>
+        <radialGradient id="ring-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#22c55e" stopOpacity="0.1" />
+          <stop offset="60%" stopColor="#22c55e" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="500" height="320" fill="url(#grid-ed)" />
+
+      {/* Title */}
+      <text x="250" y="24" textAnchor="middle" className="text-[13px] font-bold fill-indigo-300">
+        Electron Diffraction Apparatus: Cathode Tube &amp; Polycrystalline Graphite Foil
+      </text>
+
+      {/* 0-5 kV High Voltage Supply */}
+      <g id="ht-power-supply" className={isHigh('ht-power-supply') ? 'animate-pulse' : ''}>
+        <rect x="30" y="80" width="85" height="120" rx="5" fill="#0f172a" stroke="#ef4444" strokeWidth={isHigh('ht-power-supply') ? 3 : 2} />
+        <text x="72" y="105" textAnchor="middle" className="text-[11px] font-bold fill-rose-300">HT Supply</text>
+        <text x="72" y="120" textAnchor="middle" className="text-[9px] font-mono fill-rose-200">0–5.0 kV DC</text>
+        <circle cx="50" cy="155" r="4" fill="#ef4444" />
+        <circle cx="95" cy="155" r="4" fill="#0f172a" stroke="#94a3b8" strokeWidth="1.5" />
+        <text x="50" y="175" textAnchor="middle" className="text-[9px] font-bold fill-rose-400">Anode (+)</text>
+        <text x="95" y="175" textAnchor="middle" className="text-[9px] font-bold fill-slate-300">Cathode (-)</text>
+      </g>
+
+      {/* Evacuated Tube with Electron Gun */}
+      <g id="electron-gun" className={isHigh('electron-gun') ? 'animate-pulse' : ''}>
+        <rect x="140" y="125" width="45" height="50" rx="3" fill="#1e293b" stroke="#64748b" strokeWidth="1.5" />
+        <text x="162" y="115" textAnchor="middle" className="text-[9px] font-bold fill-slate-300">Electron Gun</text>
+        {/* Filament & Anode Aperture */}
+        <line x1="145" y1="150" x2="160" y2="150" stroke="#f59e0b" strokeWidth="2" />
+        <line x1="175" y1="135" x2="175" y2="165" stroke="#38bdf8" strokeWidth="2" strokeDasharray="3 3" />
+      </g>
+
+      {/* Graphite Foil Target */}
+      <g id="graphite-target" className={isHigh('graphite-target') ? 'animate-pulse' : ''}>
+        <rect x="210" y="130" width="12" height="40" rx="1" fill="#475569" stroke="#94a3b8" strokeWidth="1.5" />
+        <text x="216" y="115" textAnchor="middle" className="text-[9px] font-bold fill-amber-300">Graphite Foil</text>
+        <text x="216" y="185" textAnchor="middle" className="text-[8px] font-mono fill-amber-200">d1=0.213 nm</text>
+        <text x="216" y="195" textAnchor="middle" className="text-[8px] font-mono fill-amber-200">d2=0.123 nm</text>
+      </g>
+
+      {/* Primary Electron Beam */}
+      <line x1="175" y1="150" x2="210" y2="150" stroke="#38bdf8" strokeWidth="2" />
+
+      {/* Spherical Glass Bulb with Fluorescent Screen */}
+      <g id="fluorescent-screen" className={isHigh('fluorescent-screen') ? 'animate-pulse' : ''}>
+        <circle cx="360" cy="150" r="75" fill="#090d16" stroke="#22c55e" strokeWidth="2" strokeDasharray="4 2" />
+        <text x="360" y="65" textAnchor="middle" className="text-[11px] font-bold fill-emerald-300">Fluorescent Screen Bulb</text>
+        <text x="360" y="80" textAnchor="middle" className="text-[9px] font-mono fill-emerald-200">Distance L = 13.5 cm</text>
+
+        {/* Central un-diffracted spot */}
+        <circle cx="360" cy="150" r="3.5" fill="#ffffff" />
+
+        {/* Inner Ring D1 */}
+        <circle cx="360" cy="150" r="28" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeOpacity="0.85" />
+        <text x="395" y="142" className="text-[9px] font-mono font-bold fill-emerald-400">D1 (Inner)</text>
+
+        {/* Outer Ring D2 */}
+        <circle cx="360" cy="150" r="48" fill="none" stroke="#22c55e" strokeWidth="2" strokeOpacity="0.7" />
+        <text x="415" y="125" className="text-[9px] font-mono font-bold fill-emerald-400">D2 (Outer)</text>
+      </g>
+
+      {/* Caliper Measurement Overlay */}
+      <g id="caliper" className={isHigh('caliper') ? 'animate-pulse' : ''}>
+        <line x1="332" y1="150" x2="388" y2="150" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="2 2" />
+        <line x1="332" y1="145" x2="332" y2="155" stroke="#f59e0b" strokeWidth="2" />
+        <line x1="388" y1="145" x2="388" y2="155" stroke="#f59e0b" strokeWidth="2" />
+        <text x="360" y="165" textAnchor="middle" className="text-[9px] font-mono font-bold fill-amber-300">↔ D1 Measured</text>
+      </g>
+
+      {/* Diffracted conical rays */}
+      <line x1="222" y1="150" x2="332" y2="150" stroke="#4ade80" strokeWidth="1" strokeDasharray="3 2" />
+      <line x1="222" y1="150" x2="388" y2="150" stroke="#4ade80" strokeWidth="1" strokeDasharray="3 2" />
+      <line x1="222" y1="150" x2="312" y2="150" stroke="#22c55e" strokeWidth="1" strokeDasharray="3 2" />
+      <line x1="222" y1="150" x2="408" y2="150" stroke="#22c55e" strokeWidth="1" strokeDasharray="3 2" />
+
+      {/* De Broglie & Bragg Relations box */}
+      <rect x="50" y="240" width="400" height="48" rx="6" fill="#0f172a" stroke="#818cf8" strokeWidth="1" strokeOpacity="0.6" />
+      <text x="250" y="258" textAnchor="middle" className="text-[10px] font-mono fill-indigo-300">
+        de Broglie Wavelength: λ = h / √(2 m_e e V_A)
+      </text>
+      <text x="250" y="275" textAnchor="middle" className="text-[10px] font-mono fill-emerald-300">
+        Bragg Condition: 2 d sin θ = λ  ⇒  r / L ≈ tan 2θ ≈ 2θ  ⇒  D = 2 L λ / d
+      </text>
+
+      <text x="250" y="306" textAnchor="middle" className="text-[10px] font-mono fill-slate-400">
+        BAPHY105 Manual pp. 57–62 — Electron Diffraction with Polycrystalline Target
+      </text>
+    </svg>
+  );
+};
+
+// ============================================================================
+// EXPERIMENT 8: HEISENBERG UNCERTAINTY PRINCIPLE (SINGLE-SLIT DIFFRACTION)
+// ============================================================================
+export const SingleSlitHeisenbergDiagram: React.FC<DiagramRenderProps> = ({ highlightedId }) => {
+  const isHigh = (id: string) => highlightedId === id;
+  return (
+    <svg viewBox="0 0 500 320" className="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid-hs" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" className="text-slate-800/40" strokeWidth="0.5" />
+        </pattern>
+        <marker id="arrow-laser" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
+        </marker>
+      </defs>
+      <rect width="500" height="320" fill="url(#grid-hs)" />
+
+      {/* Title */}
+      <text x="250" y="24" textAnchor="middle" className="text-[13px] font-bold fill-sky-300">
+        Heisenberg Uncertainty Bench: Monochromatic Laser, Variable Single Slit &amp; Photodetector
+      </text>
+
+      {/* Red Laser Diode Source */}
+      <g id="laser-source" className={isHigh('laser-source') ? 'animate-pulse' : ''}>
+        <rect x="30" y="135" width="70" height="30" rx="3" fill="#0f172a" stroke="#ef4444" strokeWidth="2" />
+        <circle cx="95" cy="150" r="5" fill="#ef4444" />
+        <text x="65" y="125" textAnchor="middle" className="text-[10px] font-bold fill-rose-300">Red Laser Diode</text>
+        <text x="65" y="154" textAnchor="middle" className="text-[9px] font-mono fill-rose-200">λ = 650 nm</text>
+      </g>
+
+      {/* Monochromatic Laser Beam */}
+      <line x1="100" y1="150" x2="180" y2="150" stroke="#ef4444" strokeWidth="3" markerEnd="url(#arrow-laser)" />
+
+      {/* Adjustable Single Slit with Micrometer Screw */}
+      <g id="single-slit" className={isHigh('single-slit') ? 'animate-pulse' : ''}>
+        <rect x="180" y="80" width="16" height="55" rx="2" fill="#334155" stroke="#94a3b8" strokeWidth="1.5" />
+        <rect x="180" y="165" width="16" height="55" rx="2" fill="#334155" stroke="#94a3b8" strokeWidth="1.5" />
+        {/* Slit Aperture a */}
+        <line x1="188" y1="135" x2="188" y2="165" stroke="#38bdf8" strokeWidth="1" strokeDasharray="2 1" />
+        <text x="188" y="70" textAnchor="middle" className="text-[10px] font-bold fill-sky-300">Slit (Width a)</text>
+        <text x="188" y="235" textAnchor="middle" className="text-[9px] font-mono fill-sky-200">a = Δx (0.1–0.4 mm)</text>
+      </g>
+
+      {/* Optical Bench Rail (Distance L) */}
+      <line x1="196" y1="205" x2="380" y2="205" stroke="#64748b" strokeWidth="1.5" strokeDasharray="4 2" />
+      <text x="288" y="220" textAnchor="middle" className="text-[10px] font-mono fill-slate-300">Distance L = 100 cm</text>
+
+      {/* Diffracted Rays to First Minima */}
+      <line x1="196" y1="150" x2="380" y2="100" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3 2" />
+      <line x1="196" y1="150" x2="380" y2="150" stroke="#ef4444" strokeWidth="2.5" />
+      <line x1="196" y1="150" x2="380" y2="200" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3 2" />
+
+      {/* Traveling Photodetector & Micrometer Screen */}
+      <g id="photodetector" className={isHigh('photodetector') ? 'animate-pulse' : ''}>
+        <rect x="380" y="60" width="30" height="180" rx="3" fill="#090d16" stroke="#64748b" strokeWidth="1.5" />
+        {/* Central Maximum Profile Curve */}
+        <path
+          d="M 380 75 Q 395 100 380 115 Q 435 150 380 185 Q 395 200 380 225"
+          fill="none"
+          stroke="#facc15"
+          strokeWidth="2.5"
+        />
+        {/* Photodetector Head */}
+        <rect x="415" y="135" width="45" height="30" rx="3" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+        <circle cx="415" cy="150" r="4" fill="#38bdf8" />
+        <text x="438" y="153" textAnchor="middle" className="text-[9px] font-bold fill-sky-300">Sensor</text>
+        <text x="438" y="180" textAnchor="middle" className="text-[8px] font-mono fill-slate-300">Micrometer y</text>
+      </g>
+
+      {/* Central Fringe Width 2y1 */}
+      <line x1="375" y1="115" x2="375" y2="185" stroke="#facc15" strokeWidth="1.5" />
+      <line x1="370" y1="115" x2="380" y2="115" stroke="#facc15" strokeWidth="1.5" />
+      <line x1="370" y1="185" x2="380" y2="185" stroke="#facc15" strokeWidth="1.5" />
+      <text x="350" y="153" textAnchor="end" className="text-[10px] font-mono font-bold fill-amber-300">2 y1</text>
+
+      {/* Uncertainty Relation Equation Box */}
+      <rect x="40" y="245" width="420" height="42" rx="5" fill="#0f172a" stroke="#38bdf8" strokeWidth="1" strokeOpacity="0.6" />
+      <text x="250" y="262" textAnchor="middle" className="text-[10px] font-mono fill-sky-300">
+        Spatial Uncertainty: Δx = a  |  Angular Spread: sin θ ≈ y1 / L
+      </text>
+      <text x="250" y="278" textAnchor="middle" className="text-[10px] font-mono fill-amber-300">
+        Momentum Uncertainty: Δpx = p sin θ = (h/λ)(y1/L)  ⇒  Δx · Δpx ≥ h/2
+      </text>
+
+      <text x="250" y="306" textAnchor="middle" className="text-[10px] font-mono fill-slate-400">
+        BAPHY105 Manual pp. 63–70 — Single-Slit Diffraction Verification of Uncertainty
+      </text>
+    </svg>
+  );
+};
+
+// ============================================================================
+// EXPERIMENT 9: QUANTUM CIRCUIT & GATES ARCHITECTURE (BLOCH & TWO-QUBIT)
+// ============================================================================
+export const QuantumCircuitDiagram: React.FC<DiagramRenderProps> = ({ highlightedId }) => {
+  const isHigh = (id: string) => highlightedId === id;
+  return (
+    <svg viewBox="0 0 500 320" className="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid-qc" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" className="text-slate-800/40" strokeWidth="0.5" />
+        </pattern>
+      </defs>
+      <rect width="500" height="320" fill="url(#grid-qc)" />
+
+      {/* Title */}
+      <text x="250" y="24" textAnchor="middle" className="text-[13px] font-bold fill-purple-300">
+        Quantum Computing: Bloch Sphere Representation &amp; Two-Qubit Entanglement Circuit
+      </text>
+
+      {/* Single-Qubit Bloch Sphere Vector Projection */}
+      <g id="bloch-sphere" className={isHigh('bloch-sphere') ? 'animate-pulse' : ''}>
+        <circle cx="100" cy="140" r="55" fill="#090d16" stroke="#9333ea" strokeWidth="1.5" strokeDasharray="3 2" />
+        {/* Equator ellipse */}
+        <ellipse cx="100" cy="140" rx="55" ry="18" fill="none" stroke="#7e22ce" strokeWidth="1" strokeDasharray="2 2" />
+        {/* Axes: z, x, y */}
+        <line x1="100" y1="75" x2="100" y2="205" stroke="#c084fc" strokeWidth="1.5" />
+        <line x1="45" y1="140" x2="155" y2="140" stroke="#64748b" strokeWidth="1" />
+        {/* Poles |0> and |1> */}
+        <text x="100" y="70" textAnchor="middle" className="text-[11px] font-mono font-bold fill-purple-300">|0⟩</text>
+        <text x="100" y="218" textAnchor="middle" className="text-[11px] font-mono font-bold fill-purple-300">|1⟩</text>
+        {/* State vector |ψ> */}
+        <line x1="100" y1="140" x2="135" y2="100" stroke="#facc15" strokeWidth="2.5" />
+        <circle cx="135" cy="100" r="3.5" fill="#facc15" />
+        <text x="145" y="98" className="text-[10px] font-mono font-bold fill-amber-300">|ψ⟩</text>
+        <text x="100" y="235" textAnchor="middle" className="text-[9px] font-semibold fill-slate-300">Single Qubit Bloch Sphere</text>
+      </g>
+
+      {/* Two-Qubit Circuit Rails */}
+      <g id="quantum-circuit" className={isHigh('quantum-circuit') ? 'animate-pulse' : ''}>
+        {/* Wire 0 (|q0>) */}
+        <text x="190" y="115" className="text-[11px] font-mono font-bold fill-sky-300">|q0⟩ = |0⟩</text>
+        <line x1="250" y1="110" x2="460" y2="110" stroke="#38bdf8" strokeWidth="2" />
+
+        {/* Wire 1 (|q1>) */}
+        <text x="190" y="175" className="text-[11px] font-mono font-bold fill-sky-300">|q1⟩ = |0⟩</text>
+        <line x1="250" y1="170" x2="460" y2="170" stroke="#38bdf8" strokeWidth="2" />
+
+        {/* Hadamard Gate H on q0 */}
+        <g id="gate-h" className={isHigh('gate-h') ? 'animate-pulse' : ''}>
+          <rect x="275" y="95" width="30" height="30" rx="4" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+          <text x="290" y="114" textAnchor="middle" className="text-[12px] font-mono font-bold fill-sky-300">H</text>
+          <text x="290" y="85" textAnchor="middle" className="text-[8px] font-mono fill-slate-400">Superposition</text>
+        </g>
+
+        {/* CNOT Entangling Gate (Control on q0, Target on q1) */}
+        <g id="gate-cnot" className={isHigh('gate-cnot') ? 'animate-pulse' : ''}>
+          {/* Vertical entangling connector */}
+          <line x1="360" y1="110" x2="360" y2="170" stroke="#c084fc" strokeWidth="2.5" />
+          {/* Control point dot on q0 */}
+          <circle cx="360" cy="110" r="5" fill="#c084fc" />
+          {/* Target XOR circle on q1 */}
+          <circle cx="360" cy="170" r="12" fill="#0f172a" stroke="#c084fc" strokeWidth="2" />
+          <line x1="348" y1="170" x2="372" y2="170" stroke="#c084fc" strokeWidth="2" />
+          <line x1="360" y1="158" x2="360" y2="182" stroke="#c084fc" strokeWidth="2" />
+          <text x="360" y="85" textAnchor="middle" className="text-[8px] font-mono fill-purple-300">CNOT Entangler</text>
+        </g>
+
+        {/* Measurement Detectors on both rails */}
+        <g id="gate-measure" className={isHigh('gate-measure') ? 'animate-pulse' : ''}>
+          <rect x="420" y="98" width="24" height="24" rx="3" fill="#1e293b" stroke="#22c55e" strokeWidth="1.5" />
+          <path d="M 424 116 A 8 8 0 0 1 440 116" fill="none" stroke="#22c55e" strokeWidth="1.5" />
+          <line x1="432" y1="116" x2="438" y2="104" stroke="#22c55e" strokeWidth="1.5" />
+
+          <rect x="420" y="158" width="24" height="24" rx="3" fill="#1e293b" stroke="#22c55e" strokeWidth="1.5" />
+          <path d="M 424 176 A 8 8 0 0 1 440 176" fill="none" stroke="#22c55e" strokeWidth="1.5" />
+          <line x1="432" y1="176" x2="438" y2="164" stroke="#22c55e" strokeWidth="1.5" />
+        </g>
+      </g>
+
+      {/* Bell State Formula Callout Box */}
+      <rect x="50" y="250" width="400" height="42" rx="5" fill="#0f172a" stroke="#c084fc" strokeWidth="1" strokeOpacity="0.6" />
+      <text x="250" y="267" textAnchor="middle" className="text-[10px] font-mono fill-purple-300">
+        Maximally Entangled Bell State: |Φ⁺⟩ = (|00⟩ + |11⟩) / √2
+      </text>
+      <text x="250" y="282" textAnchor="middle" className="text-[9px] font-mono fill-emerald-300">
+        Measurement Statistics: P(00) = 50%  |  P(11) = 50%  |  P(01) = P(10) = 0%
+      </text>
+
+      <text x="250" y="306" textAnchor="middle" className="text-[10px] font-mono fill-slate-400">
+        BAPHY105 Manual pp. 75–86 — Single-Qubit &amp; Two-Qubit Quantum Gates Simulation
+      </text>
+    </svg>
+  );
+};
+

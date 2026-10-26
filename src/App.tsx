@@ -12,66 +12,88 @@ import { HeisenbergWorkbench } from './components/workbenches/HeisenbergWorkbenc
 import { QuantumWorkbench } from './components/workbenches/QuantumWorkbench';
 import { ScaffoldedWorkbench } from './components/workbenches/ScaffoldedWorkbench';
 import { VivaModal } from './components/dashboard/VivaModal';
-import { Atom, Wifi, WifiOff } from 'lucide-react';
+import { Atom, Wifi, WifiOff, Globe, CheckCircle2, AlertCircle } from 'lucide-react';
+import {
+  loadStudentProgress,
+  subscribeToStudentProgress,
+  recordVivaScore,
+  StudentProgressState,
+} from './services/studentProgress';
+import {
+  getPwaStatus,
+  subscribePwaStatus,
+  PwaStatusState,
+} from './services/pwaStatus';
 
 export function App() {
   const [activeExptId, setActiveExptId] = useState<string | null>(null);
   const [vivaModalExptId, setVivaModalExptId] = useState<string | null>(null);
-  const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
 
-  // Persistent progress state in localStorage
-  const [vivaScores, setVivaScores] = useState<Record<string, number>>(() => {
-    try {
-      const saved = localStorage.getItem('champ_vlab_viva_scores');
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
-  });
+  // Truthful student progress state
+  const [progressState, setProgressState] = useState<StudentProgressState>(() => loadStudentProgress());
 
-  const [completedExptIds] = useState<string[]>([
-    'expt-1-solar-cell',
-    'expt-2-mercury-grating',
-    'expt-3-led-planck',
-    'expt-4-quantum-tunneling',
-    'expt-5-sodium-grating',
-    'expt-6-photodiode',
-    'expt-7-electron-diffraction',
-    'expt-8-heisenberg-slit',
-    'expt-9-quantum-computing',
-  ]);
+  // Truthful PWA and offline connectivity state
+  const [pwaStatus, setPwaStatus] = useState<PwaStatusState>(() => getPwaStatus());
 
-  // Network offline listener for PWA resilience
+  // Subscribe to real student progress changes
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
+    return subscribeToStudentProgress((latest) => {
+      setProgressState(latest);
+    });
+  }, []);
+
+  // Subscribe to real PWA & offline status changes
+  useEffect(() => {
+    return subscribePwaStatus((latest) => {
+      setPwaStatus(latest);
+    });
   }, []);
 
   const handleSaveVivaScore = (exptId: string, score: number) => {
-    setVivaScores(prev => {
-      const updated = { ...prev, [exptId]: score };
-      try {
-        localStorage.setItem('champ_vlab_viva_scores', JSON.stringify(updated));
-      } catch (e) {
-        console.error('Failed to save to localStorage', e);
-      }
-      return updated;
-    });
+    recordVivaScore(exptId, score);
   };
 
-  const activeExperiment = EXPERIMENTS_DATA.find(e => e.id === activeExptId);
-  const vivaExperiment = EXPERIMENTS_DATA.find(e => e.id === vivaModalExptId);
+  const activeExperiment = EXPERIMENTS_DATA.find((e) => e.id === activeExptId);
+  const vivaExperiment = EXPERIMENTS_DATA.find((e) => e.id === vivaModalExptId);
+
+  // Badge styling depending on truthful PWA readiness level
+  const getBadgeStyle = (level: PwaStatusState['level']) => {
+    switch (level) {
+      case 'pwa_active':
+        return {
+          classes: 'bg-emerald-950/60 text-emerald-300 border-emerald-700/60',
+          icon: <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />,
+        };
+      case 'pwa_installed':
+        return {
+          classes: 'bg-teal-950/60 text-teal-300 border-teal-700/60',
+          icon: <Wifi className="w-3.5 h-3.5 text-teal-400" />,
+        };
+      case 'web_online':
+        return {
+          classes: 'bg-cyan-950/50 text-cyan-300 border-cyan-800/60',
+          icon: <Globe className="w-3.5 h-3.5 text-cyan-400" />,
+        };
+      case 'offline_ready':
+        return {
+          classes: 'bg-indigo-950/70 text-indigo-300 border-indigo-700/60',
+          icon: <WifiOff className="w-3.5 h-3.5 text-indigo-400" />,
+        };
+      case 'offline_limited':
+      default:
+        return {
+          classes: 'bg-amber-950/70 text-amber-300 border-amber-800',
+          icon: <AlertCircle className="w-3.5 h-3.5 text-amber-400" />,
+        };
+    }
+  };
+
+  const badgeConfig = getBadgeStyle(pwaStatus.level);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 no-print">
+    <div className="min-h-screen bg-[#0c1322] text-slate-100 flex flex-col">
+      {/* Top Navigation Bar with Manus Dark Navy Header */}
+      <header className="sticky top-0 z-40 bg-[#0c1322]/85 backdrop-blur-md border-b border-slate-800/80 no-print">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <button
             type="button"
@@ -92,23 +114,20 @@ export function App() {
           </button>
 
           <div className="flex items-center gap-3">
-            {/* Offline Status Badge */}
+            {/* Truthful Offline / PWA Status Badge */}
             <div
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-medium border ${
-                isOnline
-                  ? 'bg-emerald-950/40 text-emerald-300 border-emerald-900/50'
-                  : 'bg-amber-950/60 text-amber-300 border-amber-800'
-              }`}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-medium border transition-all ${badgeConfig.classes}`}
+              title={pwaStatus.tooltipText}
             >
-              {isOnline ? <Wifi className="w-3.5 h-3.5" /> : <WifiOff className="w-3.5 h-3.5" />}
-              <span>{isOnline ? 'PWA Ready' : 'Offline Mode'}</span>
+              {badgeConfig.icon}
+              <span>{pwaStatus.statusLabel}</span>
             </div>
 
             {activeExptId && (
               <button
                 type="button"
                 onClick={() => setActiveExptId(null)}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
+                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors border border-slate-700"
               >
                 Dashboard
               </button>
@@ -185,8 +204,8 @@ export function App() {
           <Dashboard
             onSelectExperiment={(id) => setActiveExptId(id)}
             onOpenViva={(id) => setVivaModalExptId(id)}
-            completedExptIds={completedExptIds}
-            vivaScores={vivaScores}
+            completedExptIds={progressState.completedExperimentIds}
+            vivaScores={progressState.vivaScores}
           />
         )}
       </main>
@@ -202,7 +221,7 @@ export function App() {
       )}
 
       {/* Standard Laboratory Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950/60 py-4 px-4 text-center text-xs text-slate-500 font-mono no-print">
+      <footer className="border-t border-slate-900 bg-[#080d18] py-4 px-4 text-center text-xs text-slate-500 font-mono no-print">
         CHAMP Lab Manual (Engineering Physics BAPHY105) • School of Advanced Sciences (SAS) &amp; SCOPE • VIT Chennai
       </footer>
     </div>

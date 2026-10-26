@@ -27,6 +27,9 @@ import {
   Maximize2,
   BookOpen,
 } from 'lucide-react';
+import { SetupDiagramPanel } from '../instructional/SetupDiagramPanel';
+import { electronDiffractionConfigurations } from '../../instructional/procedureDefinitions';
+import { recordExperimentPractice } from '../../services/studentProgress';
 
 interface ElectronDiffractionWorkbenchProps {
   metadata: ExperimentMetadata;
@@ -62,6 +65,8 @@ export const ElectronDiffractionWorkbench: React.FC<ElectronDiffractionWorkbench
   const [showTheoryModal, setShowTheoryModal] = useState<boolean>(false);
   const [showAmbiguityModal, setShowAmbiguityModal] = useState<boolean>(false);
   const [showSafetyModal, setShowSafetyModal] = useState<boolean>(false);
+  const [activeDiagramConfigId, setActiveDiagramConfigId] = useState<string>('electron_tube_caliper');
+  const [isDiagramPinned, setIsDiagramPinned] = useState<boolean>(false);
 
   // Observation Table rows (initialized to default 5 voltages: 3.0, 3.5, 4.0, 4.5, 5.0 kV)
   const [observationRows, setObservationRows] = useState<DiffractionObservationRow[]>(() =>
@@ -190,6 +195,10 @@ export const ElectronDiffractionWorkbench: React.FC<ElectronDiffractionWorkbench
 
   // CSV Export
   const handleExportCSV = () => {
+    recordExperimentPractice('expt-7-electron-diffraction', {
+      recordedRowsCount: observationRows.length,
+      summary: 'Electron diffraction Debye-Scherrer rings measured across 3-5 kV',
+    });
     const headers = [
       'S.No',
       'Voltage (kV)',
@@ -505,6 +514,15 @@ export const ElectronDiffractionWorkbench: React.FC<ElectronDiffractionWorkbench
           </div>
         </div>
       )}
+
+      {/* Collapsible Vector Setup Blueprint & Electron Diffraction Setup Panel */}
+      <SetupDiagramPanel
+        configurations={electronDiffractionConfigurations}
+        activeConfigId={activeDiagramConfigId}
+        onSelectConfig={setActiveDiagramConfigId}
+        isPinned={isDiagramPinned}
+        onTogglePin={setIsDiagramPinned}
+      />
 
       {/* Main Interactive Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

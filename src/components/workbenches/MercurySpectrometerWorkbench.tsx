@@ -21,6 +21,9 @@ import {
   Sliders,
   Maximize2,
 } from 'lucide-react';
+import { SetupDiagramPanel } from '../instructional/SetupDiagramPanel';
+import { mercuryConfigurations } from '../../instructional/procedureDefinitions';
+import { recordExperimentPractice } from '../../services/studentProgress';
 
 interface MercurySpectrometerWorkbenchProps {
   metadata: ExperimentMetadata;
@@ -47,6 +50,8 @@ export const MercurySpectrometerWorkbench: React.FC<MercurySpectrometerWorkbench
   const [isNormalIncidenceAligned, setIsNormalIncidenceAligned] = useState<boolean>(true);
   const [showCalculationsDrawer, setShowCalculationsDrawer] = useState<boolean>(false);
   const [lastSaved, setLastSaved] = useState<string | undefined>(undefined);
+  const [activeDiagramConfigId, setActiveDiagramConfigId] = useState<string>('normal_incidence');
+  const [isDiagramPinned, setIsDiagramPinned] = useState<boolean>(false);
 
   // Manual alignment wizard step (1 to 4)
   const [alignStep, setAlignStep] = useState<number>(4);
@@ -116,6 +121,10 @@ export const MercurySpectrometerWorkbench: React.FC<MercurySpectrometerWorkbench
     );
     setObservations(table);
     setLastSaved(new Date().toLocaleTimeString());
+    recordExperimentPractice('expt-2-mercury-grating', {
+      recordedRowsCount: table.rows.length,
+      summary: 'Mercury 1st order spectrum recorded for all 4 spectral lines',
+    });
   };
 
   // Record current telescope angle to a specific color and side (left/right)
@@ -329,6 +338,15 @@ export const MercurySpectrometerWorkbench: React.FC<MercurySpectrometerWorkbench
           </div>
         </div>
       )}
+
+      {/* Collapsible Vector Setup Blueprint & Spectrometer Setup Panel */}
+      <SetupDiagramPanel
+        configurations={mercuryConfigurations}
+        activeConfigId={activeDiagramConfigId}
+        onSelectConfig={setActiveDiagramConfigId}
+        isPinned={isDiagramPinned}
+        onTogglePin={setIsDiagramPinned}
+      />
 
       {/* Main Optical Bench & Spectrometer Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">

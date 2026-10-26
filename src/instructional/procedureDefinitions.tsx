@@ -11,6 +11,10 @@ import {
   LedPlanckCircuitDiagram,
   QuantumTunnelingBarrierDiagram,
   PhotodiodeCircuitDiagram,
+  SodiumMinimumDeviationDiagram,
+  ElectronDiffractionDiagram,
+  SingleSlitHeisenbergDiagram,
+  QuantumCircuitDiagram,
 } from '../components/instructional/diagrams/ApparatusDiagrams';
 
 // ============================================================================
@@ -1033,7 +1037,393 @@ export const photodiodeSteps: GuidedStep[] = [
   },
 ];
 
-// Master lookup for all experiments
+// ============================================================================
+// EXPERIMENT 5: SODIUM VAPOUR SPECTRUM (MINIMUM DEVIATION METHOD) (pp. 48–55)
+// ============================================================================
+export const sodiumConfigurations: ApparatusConfiguration[] = [
+  {
+    id: 'minimum_deviation',
+    name: 'Minimum Deviation Spectrometer Setup',
+    subtitle: 'Sodium Yellow Doublet D1 (589.6 nm) & D2 (589.0 nm) (Manual pp. 48–53)',
+    sourceManualFigure: 'Figure 1 & 2, pp. 48–51',
+    sourceManualPage: 50,
+    svgViewBox: '0 0 500 320',
+    components: [
+      { id: 'sodium-lamp', name: 'Sodium Vapour Lamp', type: 'source', description: 'Monochromatic doublet light source (589.0 & 589.6 nm)' },
+      { id: 'collimator', name: 'Collimator', type: 'optical', description: 'Parallel beam collimator with fine adjustable slit' },
+      { id: 'prism-table', name: 'Prism / Grating Table', type: 'optical', description: 'Rotatable graduated table with tangential leveling screws' },
+      { id: 'telescope', name: 'Telescope', type: 'optical', description: 'Ocular telescope with vertical and horizontal crosshairs' },
+      { id: 'vernier-v1', name: 'Vernier 1 (V1)', type: 'meter', description: 'Primary 30-division circular scale' },
+      { id: 'vernier-v2', name: 'Vernier 2 (V2)', type: 'meter', description: 'Secondary scale with 180° diametrical offset' },
+    ],
+    wiringNotes: [
+      'Focus crosshairs on direct slit image from collimator (direct ray reading T0)',
+      'Mount transmission grating on central prism table perpendicular to leveling screws',
+      'Rotate table until diffracted yellow doublet moves, stops, and reverses direction (Turning Point)',
+      'Clamp table and use tangential slow-motion screw to set crosswire exactly on the extremum turning point',
+    ],
+    renderSvg: (highId) => <SodiumMinimumDeviationDiagram highlightedId={highId} />,
+  },
+];
+
+export const sodiumSteps: GuidedStep[] = [
+  {
+    id: 'e5-step-1',
+    number: 1,
+    title: 'Lamp Initialization & Direct Collimator Ray Alignment',
+    shortTask: 'Turn on Na lamp, align telescope to direct ray, record T0',
+    what: 'Switch on the Sodium vapour lamp, align telescope directly with the collimator, and focus the crosshairs on the bright vertical yellow slit image to record the baseline direct angle T0.',
+    where: 'Toggle Sodium Lamp to ON; adjust telescope angle to 180.00°; inspect reticle view.',
+    why: 'The direct ray reading serves as the reference origin T0 from which minimum deviation D = |T_turning - T0| is measured.',
+    observe: 'A sharp, narrow vertical yellow line is centered on the reticle crosswires.',
+    mistakes: 'Neglecting to record both V1 and V2 for the direct ray introduces zero-offset errors.',
+    hint: 'Set telescope to direct ray position (180°) and verify V1 and V2.',
+    targetElementId: 'telescope-angle-slider',
+    apparatusHighlightId: 'collimator',
+    configurationId: 'minimum_deviation',
+    validate: (state) => {
+      if (Math.abs((state?.telescopeAngle ?? 0) - 180) > 1.5) {
+        return { isComplete: false, feedback: 'Center telescope on the direct ray (180°).' };
+      }
+      return { isComplete: true, feedback: 'Direct ray baseline verified.' };
+    },
+  },
+  {
+    id: 'e5-step-2',
+    number: 2,
+    title: 'Locate Minimum Deviation Turning Point (Extremum)',
+    shortTask: 'Rotate prism table slowly while observing turning point in eyepiece',
+    what: 'Rotate the prism table slowly in one direction while watching the diffracted yellow doublet in the telescope. The spectral lines will advance towards a minimum angle, stop stationary, and reverse direction upon further rotation. Lock the table at this exact turning point.',
+    where: 'Adjust Table Rotation slider; observe spectral line direction reversal in reticle; click "Lock Turning Point".',
+    why: 'At minimum deviation, the angle of incidence equals the angle of emergence (i = e), satisfying symmetric transmission through the grating element.',
+    observe: 'The line reaches an extremum position where dθ/di = 0.',
+    mistakes: 'Taking readings away from the turning point violates the minimum deviation equation 2 sin(D/2) = n·N·λ.',
+    hint: 'Find the stationary reversal point of the yellow doublet.',
+    targetElementId: 'table-angle-slider',
+    apparatusHighlightId: 'prism-table',
+    configurationId: 'minimum_deviation',
+    validate: (state) => {
+      if (!state?.isAtTurningPoint) {
+        return { isComplete: false, feedback: 'Rotate table to find the turning point extremum.' };
+      }
+      return { isComplete: true, feedback: 'Minimum deviation turning point locked.' };
+    },
+  },
+  {
+    id: 'e5-step-3',
+    number: 3,
+    title: 'Measure Minimum Deviation for D1 & D2 Doublets',
+    shortTask: 'Align crosshair with D1 (589.6 nm) and D2 (589.0 nm) and log verniers',
+    what: 'Use the fine telescope tangential screw to set the vertical crosshair precisely on the D1 line (longer wavelength 589.6 nm), record V1 and V2. Then shift slightly to D2 (shorter wavelength 589.0 nm) and record V1 and V2.',
+    where: 'Click "Record D1 Reading" and "Record D2 Reading" in the observation table.',
+    why: 'The sodium doublet is separated by only 0.6 nm (6 Å), requiring high angular resolution and careful crosshair alignment.',
+    observe: 'Both verniers show readings within ~0.05° of each other, reflecting the narrow angular separation between D1 and D2.',
+    mistakes: 'Inverting D1 and D2 lines (D1 has greater deviation than D2).',
+    hint: 'Record both D1 and D2 lines at minimum deviation into the observation table.',
+    targetElementId: 'record-line-button',
+    apparatusHighlightId: 'telescope',
+    configurationId: 'minimum_deviation',
+    validate: (state) => {
+      const rows = state?.tableRows ?? [];
+      if (rows.length < 2) {
+        return { isComplete: false, feedback: 'Record both D1 and D2 readings in the observation table.' };
+      }
+      return { isComplete: true, feedback: 'Sodium yellow doublet D1 and D2 readings logged.' };
+    },
+  },
+  {
+    id: 'e5-step-4',
+    number: 4,
+    title: 'Calculate Wavelengths λ1, λ2 & Difference Δλ',
+    shortTask: 'Compute λ = 2 sin(D/2) / (n · N) and difference Δλ = |λ1 - λ2|',
+    what: 'Calculate angle of minimum deviation D = |T_turning - T0| for each line. Compute λ1 and λ2 using λ = 2 sin(D/2) / (n · N) with N = 15,000 LPI (5.906 × 10⁵ lines/m). Compute doublet separation Δλ.',
+    where: 'Inspect Calculation Cards and verify that λ1 ≈ 589.6 nm, λ2 ≈ 589.0 nm, and Δλ ≈ 0.6 nm.',
+    why: 'Verifies the spin-orbit coupling split in the 3p state of sodium atoms (²P₃/₂ and ²P₁/₂ fine structure).',
+    observe: 'Percentage error compared to literature values (5890 Å and 5896 Å) is under 0.2%.',
+    mistakes: 'Using normal incidence formula (e+d) sin θ = n λ instead of minimum deviation formula 2 sin(D/2) = n·N·λ.',
+    hint: 'Review calculations drawer and verify doublet separation is ~0.6 nm.',
+    targetElementId: 'calculations-button',
+    apparatusHighlightId: 'sodium-lamp',
+    configurationId: 'minimum_deviation',
+    validate: () => {
+      return { isComplete: true, feedback: 'Sodium doublet wavelengths and fine-structure separation verified.' };
+    },
+  },
+];
+
+// ============================================================================
+// EXPERIMENT 7: ELECTRON DIFFRACTION (DE BROGLIE & BRAGG RINGS) (pp. 57–62)
+// ============================================================================
+export const electronDiffractionConfigurations: ApparatusConfiguration[] = [
+  {
+    id: 'electron_tube_caliper',
+    name: 'Cathode Ray Diffraction Tube & Caliper',
+    subtitle: 'Table 1: Accelerating Voltage (3–5 kV) vs Ring Diameters D1 & D2 (Manual p. 58)',
+    sourceManualFigure: 'Figure 1, p. 58',
+    sourceManualPage: 58,
+    svgViewBox: '0 0 500 320',
+    components: [
+      { id: 'ht-power-supply', name: 'HT Power Supply', type: 'source', description: 'High voltage 0–5.0 kV DC supply with 6.3V heater' },
+      { id: 'electron-gun', name: 'Electron Gun', type: 'optical', description: 'Thermionic tungsten filament cathode and accelerating anode aperture' },
+      { id: 'graphite-target', name: 'Polycrystalline Graphite Foil', type: 'optical', description: 'Thin carbon target with d1=0.213 nm and d2=0.123 nm lattice planes' },
+      { id: 'fluorescent-screen', name: 'Spherical Fluorescent Bulb', type: 'optical', description: 'Phosphor screen showing green concentric Debye-Scherrer rings' },
+      { id: 'caliper', name: 'Digital Vernier Caliper', type: 'meter', description: 'Measures inner D1 and outer D2 ring diameters in mm' },
+    ],
+    wiringNotes: [
+      'Connect heater supply (6.3V AC) to cathode filament pins',
+      'Connect High Voltage negative terminal to cathode',
+      'Connect High Voltage positive terminal to anode target aperture',
+      'Gradually increase anode voltage from 3.0 kV to 5.0 kV; never exceed 5.0 kV limit',
+    ],
+    renderSvg: (highId) => <ElectronDiffractionDiagram highlightedId={highId} />,
+  },
+];
+
+export const electronDiffractionSteps: GuidedStep[] = [
+  {
+    id: 'e7-step-1',
+    number: 1,
+    title: 'Heater Filament & Accelerating Voltage Initialization',
+    shortTask: 'Power on HT supply, set voltage to 3.0 kV, observe diffraction rings',
+    what: 'Switch on the electron diffraction apparatus, allow the tungsten cathode filament to warm up at 6.3 V, and set accelerating voltage VA to 3.0 kV. Observe the green luminescent screen.',
+    where: 'Toggle HT Supply to ON; adjust Accelerating Voltage slider to 3.0 kV; inspect phosphor screen.',
+    why: 'Electrons accelerated through potential difference VA acquire kinetic energy e·VA = p²/(2me), corresponding to de Broglie matter wavelength λ = h/p = h/√(2 me e VA).',
+    observe: 'A bright central spot surrounded by two concentric circular rings (D1 and D2) appears on the phosphor screen.',
+    mistakes: 'Setting voltage above 5.0 kV can cause thermal damage to the fragile graphite target.',
+    hint: 'Set high voltage to 3.0 kV and locate the twin green rings.',
+    targetElementId: 'voltage-slider',
+    apparatusHighlightId: 'ht-power-supply',
+    configurationId: 'electron_tube_caliper',
+    validate: (state) => {
+      if ((state?.voltage ?? 0) < 2.5) {
+        return { isComplete: false, feedback: 'Set accelerating voltage to at least 3.0 kV.' };
+      }
+      return { isComplete: true, feedback: 'High-voltage electron acceleration established.' };
+    },
+  },
+  {
+    id: 'e7-step-2',
+    number: 2,
+    title: 'Measure Ring Diameters D1 & D2 Across 3.0–5.0 kV',
+    shortTask: 'Use digital calipers to measure inner D1 and outer D2 rings at 5 voltages',
+    what: 'Use the digital caliper tool to measure the inner ring diameter D1 and outer ring diameter D2 at voltages: 3.0, 3.5, 4.0, 4.5, and 5.0 kV. Log readings into Table 1.',
+    where: 'Adjust Caliper jaws over D1 and D2; click "Record Observation Row" for each voltage step.',
+    why: 'As accelerating voltage increases, electron momentum p increases, shortening de Broglie wavelength λ, causing the diffraction rings to contract (D ∝ 1/√VA).',
+    observe: 'Inner diameter D1 contracts from ~28 mm down to ~21 mm as voltage rises from 3.0 to 5.0 kV.',
+    mistakes: 'Measuring radius instead of diameter, or mixing up inner D1 (graphite {10-10}) with outer D2 ({11-20}).',
+    hint: 'Log caliper readings for 5 voltage steps in Table 1.',
+    targetElementId: 'record-row-button',
+    apparatusHighlightId: 'caliper',
+    configurationId: 'electron_tube_caliper',
+    validate: (state) => {
+      const rows = state?.tableRows ?? [];
+      if (rows.length < 3) {
+        return { isComplete: false, feedback: 'Record at least 3 voltage steps in Table 1.' };
+      }
+      return { isComplete: true, feedback: 'Electron diffraction ring measurements logged.' };
+    },
+  },
+  {
+    id: 'e7-step-3',
+    number: 3,
+    title: 'Verify de Broglie Wavelength & Bragg Plane Spacings',
+    shortTask: 'Compute λ_dB and compare with Bragg relation d = 2 L λ / D',
+    what: 'Compute theoretical de Broglie wavelength λ = h/√(2 me e VA). From measured ring diameters D and tube radius L = 13.5 cm, compute lattice spacings d1 and d2 using Bragg condition d = 2 L λ / D.',
+    where: 'Inspect Table 1 calculated columns: λ_dB (pm), d1 (nm), d2 (nm), and verify d1 ≈ 0.213 nm, d2 ≈ 0.123 nm.',
+    why: 'Demonstrates wave-particle duality: electrons behave as waves diffracting through crystal atomic planes identical to X-ray diffraction.',
+    observe: 'Calculated d1 ≈ 0.213 nm and d2 ≈ 0.123 nm match the known hexagonal graphite honeycomb structure.',
+    mistakes: 'Forgetting the factor of 2 in Bragg ring geometry (semi-angle θ satisfies tan 2θ ≈ r/L).',
+    hint: 'Check that lattice spacings match literature values within 3% error.',
+    targetElementId: 'calculations-button',
+    apparatusHighlightId: 'graphite-target',
+    configurationId: 'electron_tube_caliper',
+    validate: () => {
+      return { isComplete: true, feedback: 'De Broglie wavelength and lattice spacings verified.' };
+    },
+  },
+];
+
+// ============================================================================
+// EXPERIMENT 8: HEISENBERG UNCERTAINTY PRINCIPLE (pp. 63–70)
+// ============================================================================
+export const heisenbergConfigurations: ApparatusConfiguration[] = [
+  {
+    id: 'single_slit_bench',
+    name: 'Single-Slit Optical Bench & Travelling Photodetector',
+    subtitle: 'Table 1: Slit Width a vs Central Fringe Width 2y1 (Manual p. 64, Fig. 1)',
+    sourceManualFigure: 'Figure 1, p. 64',
+    sourceManualPage: 64,
+    svgViewBox: '0 0 500 320',
+    components: [
+      { id: 'laser-source', name: 'Monochromatic Laser Diode', type: 'source', description: 'Red semiconductor laser (λ = 650 nm, 5 mW)' },
+      { id: 'single-slit', name: 'Variable Single Slit', type: 'optical', description: 'Precision bilateral micrometer slit (width a = 0.1 to 0.4 mm)' },
+      { id: 'photodetector', name: 'Travelling Photodetector', type: 'meter', description: 'Silicon sensor on transverse micrometer stage measuring I(y)' },
+    ],
+    wiringNotes: [
+      'Align red laser beam perpendicular to the bilateral single-slit aperture',
+      'Verify distance L = 100 cm between slit aperture and photodetector plane',
+      'Zero the transverse micrometer drum at the peak of the central diffraction maximum',
+    ],
+    renderSvg: (highId) => <SingleSlitHeisenbergDiagram highlightedId={highId} />,
+  },
+];
+
+export const heisenbergSteps: GuidedStep[] = [
+  {
+    id: 'e8-step-1',
+    number: 1,
+    title: 'Laser Alignment & Bench Rail Calibration (L = 100 cm)',
+    shortTask: 'Turn on laser, set L = 100 cm, center beam on single slit',
+    what: 'Turn on the red laser diode (λ = 650 nm). Confirm optical rail distance L = 100 cm between the slit and the sensor plane. Set initial slit width a = 0.20 mm.',
+    where: 'Toggle Laser to ON; verify Distance L slider is at 100 cm; set Slit Width to 0.20 mm.',
+    why: 'Fixed geometric distance L allows translating linear spatial separation y on the screen into angular diffraction spread: sin θ ≈ y/L.',
+    observe: 'A prominent diffraction pattern with a wide central maximum and faint side lobes appears on the detector screen.',
+    mistakes: 'Altering distance L during the experiment violates the geometric calibration.',
+    hint: 'Set distance to 100 cm and slit width to 0.20 mm.',
+    targetElementId: 'slit-width-slider',
+    apparatusHighlightId: 'laser-source',
+    configurationId: 'single_slit_bench',
+    validate: (state) => {
+      if (!state?.laserOn) {
+        return { isComplete: false, feedback: 'Turn on the laser source.' };
+      }
+      return { isComplete: true, feedback: 'Laser aligned on single slit.' };
+    },
+  },
+  {
+    id: 'e8-step-2',
+    number: 2,
+    title: 'Scan Central Diffraction Maximum & Measure Fringe Width 2y1',
+    shortTask: 'Traverse micrometer across central maximum from -y1 to +y1',
+    what: 'Move the travelling photodetector across the pattern using the micrometer drum. Locate the first intensity minimum on the left (-y1) and first minimum on the right (+y1). Compute central fringe width 2y1 = y1_right - y1_left.',
+    where: 'Sweep the Micrometer Scan slider; locate points where intensity drops to 0; record into Table 1.',
+    why: 'The first diffraction minimum occurs at a sin θ = λ ⇒ sin θ ≈ y1/L. Therefore, the angular spread of photon trajectories is θ = λ/a.',
+    observe: 'Narrower slit widths produce wider central diffraction peaks, demonstrating inverse spatial-momentum relationship.',
+    mistakes: 'Confusing semi-width y1 with total central peak width 2y1.',
+    hint: 'Measure distance between the two first-order minima flanking the central peak.',
+    targetElementId: 'record-fringe-button',
+    apparatusHighlightId: 'photodetector',
+    configurationId: 'single_slit_bench',
+    validate: (state) => {
+      const rows = state?.tableRows ?? [];
+      if (rows.length < 3) {
+        return { isComplete: false, feedback: 'Record central fringe widths for at least 3 slit widths.' };
+      }
+      return { isComplete: true, feedback: 'Diffraction fringe widths recorded across slit widths.' };
+    },
+  },
+  {
+    id: 'e8-step-3',
+    number: 3,
+    title: 'Evaluate Heisenberg Inequality Δx · Δpx ≥ h/2',
+    shortTask: 'Compute spatial uncertainty Δx = a, momentum uncertainty Δpx, and product',
+    what: 'Calculate spatial uncertainty Δx = a and momentum uncertainty Δpx = p sin θ = (h/λ)(y1/L). Evaluate the product Δx · Δpx and confirm that it satisfies the quantum limit Δx · Δpx ≥ h/2 (or ≥ h).',
+    where: 'Inspect Table 1 columns: Δx (mm), Δpx (kg·m/s), and Uncertainty Product (J·s).',
+    why: 'Confining the photon spatially by narrowing the slit (decreasing Δx) broadens the diffracted beam, creating a greater transverse momentum spread (increasing Δpx).',
+    observe: 'For all slit widths, the product Δx · Δpx is of order ~h (typically 1.0 to 1.5 × 10⁻³⁴ J·s), always strictly exceeding h/2.',
+    mistakes: 'Using slit width in millimeters instead of converting to meters when multiplying by momentum.',
+    hint: 'Verify that the uncertainty product exceeds h/2 = 3.313 × 10⁻³⁴ J·s.',
+    targetElementId: 'calculations-button',
+    apparatusHighlightId: 'single-slit',
+    configurationId: 'single_slit_bench',
+    validate: () => {
+      return { isComplete: true, feedback: 'Heisenberg uncertainty principle successfully verified.' };
+    },
+  },
+];
+
+// ============================================================================
+// EXPERIMENT 9: QUANTUM COMPUTING & GATES (pp. 75–86)
+// ============================================================================
+export const quantumConfigurations: ApparatusConfiguration[] = [
+  {
+    id: 'quantum_circuit_bloch',
+    name: 'Bloch Sphere & Two-Qubit Circuit',
+    subtitle: 'Table 1: Single Qubit Gate Rotations & Table 2: Two-Qubit Entanglement (Manual pp. 75–86)',
+    sourceManualFigure: 'Circuit Diagram, pp. 77–80',
+    sourceManualPage: 77,
+    svgViewBox: '0 0 500 320',
+    components: [
+      { id: 'bloch-sphere', name: 'Bloch Sphere Projection', type: 'quantum', description: '3D state vector |ψ⟩ = cos(θ/2)|0⟩ + e^(iφ)sin(θ/2)|1⟩' },
+      { id: 'quantum-circuit', name: 'Quantum Circuit Register', type: 'quantum', description: 'Two-qubit rail system with single and multi-qubit gates' },
+      { id: 'gate-h', name: 'Hadamard Gate (H)', type: 'quantum', description: 'Creates equal superposition (|0⟩ + |1⟩)/√2' },
+      { id: 'gate-cnot', name: 'Controlled-NOT (CNOT)', type: 'quantum', description: 'Entangles control qubit q0 with target qubit q1' },
+      { id: 'gate-measure', name: 'Measurement Detector', type: 'quantum', description: 'Projects quantum state into classical bit string 00 or 11' },
+    ],
+    wiringNotes: [
+      'Initialize qubits in ground state |00⟩',
+      'Apply Hadamard gate H to qubit q0 to generate superposition (|0⟩ + |1⟩)/√2',
+      'Apply CNOT gate with control on q0 and target on q1 to produce Bell state (|00⟩ + |11⟩)/√2',
+      'Run 1024 shot measurements to verify 50% |00⟩ and 50% |11⟩ correlation',
+    ],
+    renderSvg: (highId) => <QuantumCircuitDiagram highlightedId={highId} />,
+  },
+];
+
+export const quantumSteps: GuidedStep[] = [
+  {
+    id: 'e9-step-1',
+    number: 1,
+    title: 'Single Qubit Initialization & Bloch Sphere Navigation',
+    shortTask: 'Initialize |q0⟩ = |0⟩, apply Pauli X, Y, Z gates, observe Bloch vector',
+    what: 'Configure a single qubit in state |0⟩. Apply Pauli gates (X: bit flip |0⟩ → |1⟩, Z: phase flip |+⟩ → |-⟩, H: Hadamard |0⟩ → |+⟩). Observe the state vector rotate on the Bloch sphere.',
+    where: 'Select Gate (X, Y, Z, H); click "Apply Gate"; observe 3D Bloch sphere vector movement.',
+    why: 'Any pure single-qubit state can be represented as a point on the unit Bloch sphere with polar angle θ and azimuthal angle φ.',
+    observe: 'Pauli X rotates 180° around X axis, sending the vector from North Pole (|0⟩) to South Pole (|1⟩).',
+    mistakes: 'Confusing unitary gate rotation with projective measurement.',
+    hint: 'Apply X and H gates to test single-qubit state transitions.',
+    targetElementId: 'single-qubit-controls',
+    apparatusHighlightId: 'bloch-sphere',
+    configurationId: 'quantum_circuit_bloch',
+    validate: (state) => {
+      if (!state?.hasAppliedSingleGate) {
+        return { isComplete: false, feedback: 'Apply at least one single-qubit gate (X, Y, Z, or H).' };
+      }
+      return { isComplete: true, feedback: 'Single-qubit unitary gate transformations tested.' };
+    },
+  },
+  {
+    id: 'e9-step-2',
+    number: 2,
+    title: 'Two-Qubit Entanglement & Bell State Generation',
+    shortTask: 'Construct H + CNOT circuit to synthesize Bell state (|00⟩ + |11⟩)/√2',
+    what: 'Switch to Two-Qubit workbench. Apply Hadamard H on qubit q0, followed by CNOT with control q0 and target q1. Verify the resulting state vector is the maximally entangled Bell state |Φ⁺⟩.',
+    where: 'Toggle H on q0; toggle CNOT (control q0, target q1); click "Simulate State".',
+    why: 'Hadamard creates superposition on q0: (|0⟩ + |1⟩)|0⟩/√2 = (|00⟩ + |10⟩)/√2. CNOT flips q1 if q0 is 1, yielding (|00⟩ + |11⟩)/√2, where qubits cannot be factored independently.',
+    observe: 'State vector shows two non-zero components: c00 = 1/√2 and c11 = 1/√2, with zero probability for 01 or 10.',
+    mistakes: 'Applying CNOT before Hadamard yields |00⟩ without generating entanglement.',
+    hint: 'Place H on q0 then CNOT between q0 and q1.',
+    targetElementId: 'bell-state-button',
+    apparatusHighlightId: 'gate-cnot',
+    configurationId: 'quantum_circuit_bloch',
+    validate: (state) => {
+      if (!state?.isBellState) {
+        return { isComplete: false, feedback: 'Synthesize the Bell state (|00⟩ + |11⟩)/√2 using H + CNOT.' };
+      }
+      return { isComplete: true, feedback: 'Maximally entangled Bell state generated.' };
+    },
+  },
+  {
+    id: 'e9-step-3',
+    number: 3,
+    title: 'Measurement Statistics & Qiskit Python Code Export',
+    shortTask: 'Simulate 1024 shots, verify 50/50 measurement histogram, export Python script',
+    what: 'Simulate projective measurement with 1024 shots. Confirm that outcome |00⟩ occurs ~50% and |11⟩ occurs ~50%, while |01⟩ and |10⟩ never appear. Export the validated Qiskit Python script and save lab record.',
+    where: 'Click "Run 1024 Shots"; inspect measurement histogram; click "Export Qiskit Python"; save lab record.',
+    why: 'Validates non-local quantum correlation: measuring q0 immediately determines the state of q1 with 100% correlation regardless of physical distance.',
+    observe: 'Histogram displays equal probability peaks at 00 and 11; Qiskit code matches standard IBM Quantum syntax.',
+    mistakes: 'Expecting single-qubit classical outcomes from an entangled state.',
+    hint: 'Run 1024 measurement shots and export the Qiskit Python script.',
+    targetElementId: 'export-qiskit-button',
+    apparatusHighlightId: 'gate-measure',
+    configurationId: 'quantum_circuit_bloch',
+    validate: () => {
+      return { isComplete: true, feedback: 'Quantum circuit simulated, measured, and Python export verified.' };
+    },
+  },
+];
+
+// Master lookup for all 9 experiments
 export const PROCEDURES_BY_EXPERIMENT: Record<string, ExperimentProcedure> = {
   'expt-1-solar-cell': {
     experimentId: 'expt-1-solar-cell',
@@ -1071,6 +1461,15 @@ export const PROCEDURES_BY_EXPERIMENT: Record<string, ExperimentProcedure> = {
     configurations: tunnelingConfigurations,
     steps: tunnelingSteps,
   },
+  'expt-5-sodium-grating': {
+    experimentId: 'expt-5-sodium-grating',
+    experimentNumber: 5,
+    experimentTitle: 'Wavelength of Sodium Light (Minimum Deviation)',
+    sourcePages: 'pp. 48–55',
+    rubric: { labPerformanceMarks: 7, vivaMarks: 3, totalMarks: 10 },
+    configurations: sodiumConfigurations,
+    steps: sodiumSteps,
+  },
   'expt-6-photodiode': {
     experimentId: 'expt-6-photodiode',
     experimentNumber: 6,
@@ -1079,5 +1478,32 @@ export const PROCEDURES_BY_EXPERIMENT: Record<string, ExperimentProcedure> = {
     rubric: { labPerformanceMarks: 7, vivaMarks: 3, totalMarks: 10 },
     configurations: photodiodeConfigurations,
     steps: photodiodeSteps,
+  },
+  'expt-7-electron-diffraction': {
+    experimentId: 'expt-7-electron-diffraction',
+    experimentNumber: 7,
+    experimentTitle: 'Electron Diffraction (de Broglie & Bragg Wavelengths)',
+    sourcePages: 'pp. 57–62',
+    rubric: { labPerformanceMarks: 7, vivaMarks: 3, totalMarks: 10 },
+    configurations: electronDiffractionConfigurations,
+    steps: electronDiffractionSteps,
+  },
+  'expt-8-heisenberg-slit': {
+    experimentId: 'expt-8-heisenberg-slit',
+    experimentNumber: 8,
+    experimentTitle: "Heisenberg's Uncertainty Principle (Single-Slit)",
+    sourcePages: 'pp. 63–70',
+    rubric: { labPerformanceMarks: 7, vivaMarks: 3, totalMarks: 10 },
+    configurations: heisenbergConfigurations,
+    steps: heisenbergSteps,
+  },
+  'expt-9-quantum-computing': {
+    experimentId: 'expt-9-quantum-computing',
+    experimentNumber: 9,
+    experimentTitle: 'Single-Qubit and Two-Qubit Quantum Logic Gates',
+    sourcePages: 'pp. 75–86',
+    rubric: { labPerformanceMarks: 7, vivaMarks: 3, totalMarks: 10 },
+    configurations: quantumConfigurations,
+    steps: quantumSteps,
   },
 };

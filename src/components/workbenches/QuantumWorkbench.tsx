@@ -32,6 +32,9 @@ import {
   Maximize2,
   Activity,
 } from 'lucide-react';
+import { SetupDiagramPanel } from '../instructional/SetupDiagramPanel';
+import { quantumConfigurations } from '../../instructional/procedureDefinitions';
+import { recordExperimentPractice } from '../../services/studentProgress';
 
 interface QuantumWorkbenchProps {
   metadata: ExperimentMetadata;
@@ -55,6 +58,15 @@ export const QuantumWorkbench: React.FC<QuantumWorkbenchProps> = ({
   const [showTheoryModal, setShowTheoryModal] = useState<boolean>(false);
   const [codeCopied, setCodeCopied] = useState<boolean>(false);
   const [activeTableTab, setActiveTableTab] = useState<1 | 2 | 3 | 4 | 5>(5);
+  const [activeDiagramConfigId, setActiveDiagramConfigId] = useState<string>('quantum_circuit_bloch');
+  const [isDiagramPinned, setIsDiagramPinned] = useState<boolean>(false);
+
+  React.useEffect(() => {
+    recordExperimentPractice(metadata.id, {
+      completedSteps: [guidedStep],
+      recordedRowsCount: 5,
+    });
+  }, [metadata.id, guidedStep]);
 
   // Basis convention toggle
   const [basisConvention, setBasisConvention] = useState<'TEXTBOOK' | 'QISKIT'>('TEXTBOOK');
@@ -388,6 +400,15 @@ export const QuantumWorkbench: React.FC<QuantumWorkbenchProps> = ({
           </div>
         </div>
       )}
+
+      {/* Collapsible Diagram & Setup Reference */}
+      <SetupDiagramPanel
+        configurations={quantumConfigurations}
+        activeConfigId={activeDiagramConfigId}
+        onSelectConfig={setActiveDiagramConfigId}
+        isPinned={isDiagramPinned}
+        onTogglePin={() => setIsDiagramPinned((prev) => !prev)}
+      />
 
       {/* TAB 1: TWO-QUBIT CIRCUIT & ENTANGLEMENT */}
       {activeTab === 'two_qubit' && (

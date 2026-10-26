@@ -23,6 +23,9 @@ import {
   FileCode,
   BookOpen,
 } from 'lucide-react';
+import { SetupDiagramPanel } from '../instructional/SetupDiagramPanel';
+import { tunnelingConfigurations } from '../../instructional/procedureDefinitions';
+import { recordExperimentPractice } from '../../services/studentProgress';
 
 interface QuantumTunnelingWorkbenchProps {
   metadata: ExperimentMetadata;
@@ -51,6 +54,8 @@ export const QuantumTunnelingWorkbench: React.FC<QuantumTunnelingWorkbenchProps>
   const [showCodeDrawer, setShowCodeDrawer] = useState<boolean>(false);
   const [showCalculationsDrawer, setShowCalculationsDrawer] = useState<boolean>(false);
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
+  const [activeDiagramConfigId, setActiveDiagramConfigId] = useState<string>('barrier_geometry');
+  const [isDiagramPinned, setIsDiagramPinned] = useState<boolean>(false);
 
   // Simulation Engine Execution
   const currentParams: TunnelingParams = useMemo(
@@ -164,6 +169,10 @@ export const QuantumTunnelingWorkbench: React.FC<QuantumTunnelingWorkbenchProps>
 
   // CSV Export for Tables
   const handleExportCSV = () => {
+    recordExperimentPractice('expt-4-quantum-tunneling', {
+      recordedRowsCount: table1_1Data.length + table2_1Data.length,
+      summary: 'Quantum tunneling transmission tables calculated and exported',
+    });
     let csv = '=== TABLE 1.1: T vs E (a = 1.5 A, V0 = 6.0 eV) ===\\n';
     csv += 'Sl.No,Energy E (eV),Transmitted Amplitude |t|,T (observed),T (calculated)\\n';
     table1_1Data.forEach((r) => {
@@ -407,6 +416,15 @@ export const QuantumTunnelingWorkbench: React.FC<QuantumTunnelingWorkbenchProps>
           </div>
         </div>
       )}
+
+      {/* Collapsible Vector Setup Blueprint & Potential Barrier Setup Panel */}
+      <SetupDiagramPanel
+        configurations={tunnelingConfigurations}
+        activeConfigId={activeDiagramConfigId}
+        onSelectConfig={setActiveDiagramConfigId}
+        isPinned={isDiagramPinned}
+        onTogglePin={setIsDiagramPinned}
+      />
 
       {/* Main Interactive Studio Area */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">

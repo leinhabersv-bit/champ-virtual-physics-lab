@@ -40,10 +40,10 @@ describe('QuantumTunnelingWorkbench Interactive User Journey (Experiment 4)', ()
     expect(screen.getByText(/SIMULATED DATA - VALIDATED SCHRÖDINGER SOLVER/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Sub-barrier Tunneling \(E < V0\)/i).length).toBeGreaterThanOrEqual(1);
 
-    // Verify Region boundaries displayed in SVG annotations
-    expect(screen.getByText(/REGION I \(x < 0\)/i)).toBeInTheDocument();
-    expect(screen.getByText(/REGION II \(0 ≤ x ≤ a\)/i)).toBeInTheDocument();
-    expect(screen.getByText(/REGION III \(x > a\)/i)).toBeInTheDocument();
+    // Verify Region boundaries displayed in SVG annotations and diagram setup
+    expect(screen.getAllByText(/REGION I \(x < 0\)/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/REGION II \(0 ≤ x ≤ a\)/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/REGION III \(x > a\)/i).length).toBeGreaterThanOrEqual(1);
 
     // 2. Initial Scientific Instruments Readings (E = 2.0 eV, V0 = 6.0 eV, a = 1.5 Å)
     expect(screen.getByText(/Transmission Prob T/i)).toBeInTheDocument();
