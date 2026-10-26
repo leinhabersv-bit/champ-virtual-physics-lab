@@ -206,8 +206,8 @@ export const EXPERIMENTS_DATA: ExperimentMetadata[] = [
     pdfPageRange: 'pp. 56–59',
     printedPageRange: 'pp. 53–56',
     formulaSummary: 'I = ID + Iph; Iph = Iillum - ID; Responsivity R = Iph / Popt (A/W); %Δ = ((Iillum - ID) / ID) × 100',
-    isDemoFunctional: false,
-    statusBadge: 'Contract Scaffolded',
+    isDemoFunctional: true,
+    statusBadge: 'Functional Demo',
     tags: ['Cycle 2', 'Semiconductors', 'Photodiode', 'Dark Current', 'Responsivity'],
     vivaQuestions: [
       {

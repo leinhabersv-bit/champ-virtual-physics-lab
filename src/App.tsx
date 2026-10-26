@@ -6,6 +6,7 @@ import { MercurySpectrometerWorkbench } from './components/workbenches/MercurySp
 import { LedPlanckWorkbench } from './components/workbenches/LedPlanckWorkbench';
 import { QuantumTunnelingWorkbench } from './components/workbenches/QuantumTunnelingWorkbench';
 import { SodiumSpectrometerWorkbench } from './components/workbenches/SodiumSpectrometerWorkbench';
+import { PhotodiodeWorkbench } from './components/workbenches/PhotodiodeWorkbench';
 import { ScaffoldedWorkbench } from './components/workbenches/ScaffoldedWorkbench';
 import { VivaModal } from './components/dashboard/VivaModal';
 import { Atom, Wifi, WifiOff } from 'lucide-react';
@@ -30,7 +31,8 @@ export function App() {
     'expt-2-mercury-grating',
     'expt-3-led-planck',
     'expt-4-quantum-tunneling',
-    'expt-5-sodium-grating'
+    'expt-5-sodium-grating',
+    'expt-6-photodiode'
   ]);
 
   // Network offline listener for PWA resilience
@@ -138,6 +140,12 @@ export function App() {
             />
           ) : activeExperiment.id === 'expt-5-sodium-grating' ? (
             <SodiumSpectrometerWorkbench
+              metadata={activeExperiment}
+              onBackToDashboard={() => setActiveExptId(null)}
+              onOpenViva={() => setVivaModalExptId(activeExperiment.id)}
+            />
+          ) : activeExperiment.id === 'expt-6-photodiode' ? (
+            <PhotodiodeWorkbench
               metadata={activeExperiment}
               onBackToDashboard={() => setActiveExptId(null)}
               onOpenViva={() => setVivaModalExptId(activeExperiment.id)}

@@ -136,6 +136,25 @@
 | **Automated Test Coverage** | Unit tests + interactive integration test | 78 / 78 tests passing across 15 test suites (`sodiumGratingEngine.test.ts`, `sodiumSpectrometerInteractive.test.tsx`, etc.). Verified turning point, angular conversions, wavelength recovery, and UI interaction. | VERIFIED |
 | **Production Build** | `tsc && vite build` | Clean compilation with zero TypeScript errors or warnings. Vite production bundle built cleanly. | VERIFIED |
 
+---
+
+## 9. Experiment 6: Photodiode I–V Characteristics Verification Log
+
+| Component | Target Spec | Implementation & Evidence | Status |
+|---|---|---|---|
+| **Reverse Bias Photoconductive Engine** | Complete physical model $I = I_D + I_{ph}$ under reverse bias $V_R \in [0, 5]\,\text{V}$ | `src/engine/photodiodeSimulator.ts`: Thermal saturation dark current $I_0(1 - e^{-V_R/\eta V_T})$ + surface shunt leakage $V_R / R_{sh}$. Verified by unit test `TC-E6-01`. | VERIFIED |
+| **Inverse-Square Optical Power** | $P_{opt}(d) \propto 1/d^2$ distance dependence | $P_{opt}(d) = P_{ref} \cdot (d_{ref}/d)^2$. At 10 cm: $45\,\mu\text{W}$; at 20 cm: $11.25\,\mu\text{W}$ ($1/4\times$); at 5 cm: $180\,\mu\text{W}$ ($4\times$). Verified by unit test `TC-E6-02`. Zero optical power strictly enforced when lamp is OFF or opaque shielding is ON. | VERIFIED |
+| **Photocurrent & Responsivity** | $I_{ph} = I_{illum} - I_D\text{ (A)}$ and $R = I_{ph} / P_{opt}\text{ (A/W)}$ | Computes true photocurrent $I_{ph}$ with explicit $\mu\text{A} \leftrightarrow \text{A}$ conversion. Responsivity $R = 0.45\,\text{A/W}$ matching standard silicon optoelectronic specifications. Verified by unit test `TC-E6-03`. | VERIFIED |
+| **Percentage Change & Zero-Protection** | $\% \Delta = \frac{I_{illum} - I_D}{I_D} \times 100$ | Evaluates relative photo-response with zero-dark-current protection: safely returns `null`/undefined when $I_D \to 0$ (e.g. at $V_R = 0$) to eliminate division-by-zero crashes. Verified by unit test `TC-E6-04`. | VERIFIED |
+| **Observation Tables 1, 2, and 3 Parity** | Manual pp. 58–59 exact table reproductions | Table 1: Dark current ($0-5\,\text{V}$ in $0.5\,\text{V}$ steps). Table 2: Photocurrent at fixed distances ($D_1 = 10\,\text{cm}$ and $D_2 = 15\,\text{cm}$). Table 3: Photocurrent at fixed reverse voltages ($1\,\text{V}, 2\,\text{V}, 3\,\text{V}$) across distances ($5, 10, 15, 20\,\text{cm}$). CSV export supported. | VERIFIED |
+| **Circuit Topology & Polarity Validator** | Netlist graph validation of breadboard wiring | `src/engine/photodiodeNetlist.ts`: Validates complete loop from DC Supply (+) through 1 kΩ resistor and microammeter to Photodiode Cathode (-), and Anode (+) to Supply (-). Detects `FORWARD_BIAS_WARNING` on inverted polarity, `AMMETER_PARALLEL_SHORT`, and `OPEN_CIRCUIT`. Verified by unit test `TC-E6-06`. | VERIFIED |
+| **Dual-Mode Interactive Visual Plotter** | Manual p. 58 Image225 3rd-quadrant curves & $I_{ph}$ vs $1/d^2$ | SVG plotter renders 3 curves: Dark current (dashed), $D_1 = 10\,\text{cm}$ (amber), and $D_2 = 15\,\text{cm}$ (sky) with live operating point cursor. Switchable to linear $I_{ph}$ vs $1/d^2$ scatter plot. | VERIFIED |
+| **Interactive Vector Apparatus** | SVG testbench with DC supply, meters, optical rail & shield | Regulated supply ($0-30\,\text{V}$), microammeter ($0-100\,\mu\text{A}$), voltmeter ($0-10\,\text{V}$), 1 kΩ resistor with color bands, photodiode mount, movable optical lamp carriage ($5-25\,\text{cm}$), and removable opaque shielding box. | VERIFIED |
+| **Pedagogical Modes & Viva** | Guided, Exam, Viva Voce, Theory drawer | 4-step guided progression, exam mode with rubric, KaTeX mathematical derivation drawer, and complete observation table CSV export. | VERIFIED |
+| **Automated Test Coverage** | Unit tests + interactive integration test | 86 / 86 tests passing across 17 test suites (`photodiodeSimulator.test.ts`, `photodiodeInteractive.test.tsx`, `simulators.test.ts`, etc.). | VERIFIED |
+| **Production Build** | `tsc && vite build` | Clean compilation with zero TypeScript errors or warnings. Vite bundle built in 4.19s. | VERIFIED |
+
+
 
 
 
