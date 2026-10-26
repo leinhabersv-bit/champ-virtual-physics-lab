@@ -234,8 +234,8 @@ export const EXPERIMENTS_DATA: ExperimentMetadata[] = [
     pdfPageRange: 'pp. 60–65',
     printedPageRange: 'pp. 57–62',
     formulaSummary: 'λ_dB = h / √(2me·e·V); Bragg: 2d sin θ = n λ ⇒ d·(D / 2L) = λ; K = eV',
-    isDemoFunctional: false,
-    statusBadge: 'Contract Scaffolded',
+    isDemoFunctional: true,
+    statusBadge: 'Functional Demo',
     tags: ['Cycle 2', 'Modern Physics', 'de Broglie Wavelength', 'Electron Diffraction', 'Bragg Law'],
     inconsistencies: [
       'Manual p. 64 writes "Outer diameter: d=0.213nm", confusing lattice spacing d with diameter D.',

@@ -154,6 +154,27 @@
 | **Automated Test Coverage** | Unit tests + interactive integration test | 86 / 86 tests passing across 17 test suites (`photodiodeSimulator.test.ts`, `photodiodeInteractive.test.tsx`, `simulators.test.ts`, etc.). | VERIFIED |
 | **Production Build** | `tsc && vite build` | Clean compilation with zero TypeScript errors or warnings. Vite bundle built in 4.19s. | VERIFIED |
 
+---
+
+## 10. Experiment 7: Electron Diffraction & de Broglie Wavelength Verification Log
+
+| Component | Target Spec | Implementation & Evidence | Status |
+|---|---|---|---|
+| **de Broglie Wave Mechanics Engine** | $\lambda_{dB} = \frac{h}{p} = \frac{h}{\sqrt{2 m_e e V_A}}$ across $V_A \in [2.0, 5.0]\,\text{kV}$ | `src/engine/electronDiffractionSimulator.ts`: Implements exact de Broglie wavelength in metres, nanometres, and Angstroms. At $4.0\,\text{kV}$, $\lambda_{dB} = 0.01939\,\text{nm} = 0.1939\,\text{\AA}$. Verified by unit test `TC-E7-01`. | VERIFIED |
+| **Dual Graphite Lattice Geometry** | Inner Ring $d_1 = 0.213\,\text{nm}$ ($\{10\bar{1}0\}$) & Outer Ring $d_2 = 0.123\,\text{nm}$ ($\{11\bar{2}0\}$) | Models both lattice plane spacings from manual Fig. 5. Preserves fixed screen distance $L = 135.0\,\text{mm}$. Verified by unit test `TC-E7-03`: Ring 1 diameter $D_1 \approx 24.66\,\text{mm}$ is smaller than Ring 2 diameter $D_2 \approx 42.97\,\text{mm}$ because $D \propto 1/d$. | VERIFIED |
+| **Inverse Voltage Scaling $D \propto 1/\sqrt{V_A}$** | Ring diameter shrinks as accelerating voltage increases | Strict inverse square-root dependence modeled across $2.5, 3.0, 3.5, 4.0, 4.5, 5.0\,\text{kV}$. Product $D \cdot \sqrt{V_A} \approx \text{constant}$ within $0.5\%$. Verified by unit test `TC-E7-02` and E2E interactive test. | VERIFIED |
+| **Exact Bragg vs Small-Angle Parity** | $\lambda_{\text{Bragg}} = 2d \sin\left(\frac{1}{2}\arctan\left(\frac{D}{2L}\right)\right)$ (Image 49) | Implements both the exact trigonometric formula from manual Image 49 and small-angle approximation $\lambda \approx \frac{d D}{2L}$. Discrepancy between exact Bragg and de Broglie is $< 0.01\%$. Verified by unit test `TC-E7-04`. | VERIFIED |
+| **Electron Kinetic Energy & Dynamics** | $K = e V_A$ in Joules and $\text{eV}$, electron speed $v$, and relativistic $\beta, \gamma$ | Computes $K = 4000\,\text{eV} = 6.4087 \times 10^{-16}\,\text{J}$, momentum $p = 3.417 \times 10^{-23}\,\text{kg}\cdot\text{m/s}$, $v \approx 3.75 \times 10^7\,\text{m/s}$, $\beta = v/c \approx 0.125$, and $\gamma \approx 1.008$ (<1% relativistic deviation, justifying non-relativistic model). Verified by unit test `TC-E7-05`. | VERIFIED |
+| **Vernier Caliper Decomposition** | $\text{MSR} = \lfloor D \rfloor$, $\text{VSC} = \text{round}((D - \text{MSR})/0.1)$, $\text{TR} = \text{MSR} + \text{VSC} \times 0.1\,\text{mm}$ | Caliper least count $\text{LC} = 0.1\,\text{mm}$. Live decomposed readouts with graphical vernier slider and fine adjustment. Verified by unit test `TC-E7-06`. | VERIFIED |
+| **Observation Table Parity** | Manual p. 65 Table (Voltage, Ring 1 & Ring 2 MSR, VSC, TR, $\tan 2\theta$, $\theta$, Bragg $\lambda$, de Broglie $\lambda$, % Error) | `generateObservationTable` produces full 5-row table for $3.0, 3.5, 4.0, 4.5, 5.0\,\text{kV}$ with complete sub-columns. Live table allows recording measurements and exporting to CSV. Verified by unit test `TC-E7-08`. | VERIFIED |
+| **Flagged Manual Ambiguities (AMB-04 & AMB-05)** | AMB-04 ($0.5\,\text{V}$ step erratum) and AMB-05 ($0.213\,\text{nm}$ "outer" erratum) | Explicit educational callout card and modal display source text, issue, and resolution without silently altering the math. Verified by unit test `TC-E7-09`. | VERIFIED |
+| **Cathode Thermal Stabilization** | Thermionic emission warm-up period (~60s with skip option) | Models cathode warm-up timer ($0-100\%$). Cold filament suppresses beam current and diffraction rings; warm filament produces glowing rings and $75\,\mu\text{A}$ anode current. Verified by unit test `TC-E7-07`. | VERIFIED |
+| **Interactive Vector Apparatus** | SVG Electron Diffraction Tube & P31 Phosphor Luminescent Screen | High-voltage supply ($0-5\,\text{kV}$), analogue microammeter with needle deflection, darkroom chamber toggle, concentric millimeter grid overlay, draggable Vernier calipers, and central undeflected beam spot. | VERIFIED |
+| **Analytical Graph: $D$ vs $1/\sqrt{V_A}$** | Linear confirmation of de Broglie relation ($R^2 \approx 0.999$) | Interactive SVG plot shows measured data points for both rings against theoretical linear regression lines. | VERIFIED |
+| **Automated Test Coverage** | 9 unit tests + full E2E user journey test | 96 / 96 tests passing across 19 test suites (`electronDiffractionSimulator.test.ts`, `electronDiffractionInteractive.test.tsx`, `simulators.test.ts`, etc.). | VERIFIED |
+| **Production Build** | `tsc && vite build` | Clean compilation with zero TypeScript errors or warnings. Built in 3.61s. | VERIFIED |
+
+
 
 
 
