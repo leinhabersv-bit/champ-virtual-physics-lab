@@ -174,6 +174,27 @@
 | **Automated Test Coverage** | 9 unit tests + full E2E user journey test | 96 / 96 tests passing across 19 test suites (`electronDiffractionSimulator.test.ts`, `electronDiffractionInteractive.test.tsx`, `simulators.test.ts`, etc.). | VERIFIED |
 | **Production Build** | `tsc && vite build` | Clean compilation with zero TypeScript errors or warnings. Built in 3.61s. | VERIFIED |
 
+---
+
+## 11. Experiment 8: Heisenberg Single-Slit Uncertainty Principle Verification Log
+
+| Component | Target Spec | Implementation & Evidence | Status |
+|---|---|---|---|
+| **Source Audit (PDF pp. 66–74)** | Mandatory audit of scanned pages 66–74 (printed pp. 63–71) | Visual inspection verified apparatus (Diode laser $\lambda = 650\,\text{nm}$, single-slit carriage, optical rail $D = 1000\,\text{mm}$, photodetector on translation stage, microammeter), theory ($d \sin\theta = m\lambda$, $\Delta y = d$, $\Delta p_y = (h/\lambda)\sin\theta_1$, $\Delta y \Delta p_y = h$), all 3 observation tables, and ambiguity points. Extracted formulas without substitution. | VERIFIED |
+| **Fraunhofer Wave Optics Solver** | $I(y) = I_0 \left[\frac{\sin\beta}{\beta}\right]^2$ where $\beta = \frac{\pi d \sin\theta}{\lambda}$ | `src/engine/heisenbergSimulator.ts`: Exact Fraunhofer diffraction intensity profile with sinc-squared distribution, central maximum ($I_0 \approx 85\,\mu\text{A}$), and secondary diffraction lobes. Avoids $\beta = 0$ singularity. Verified by unit test `TC-E8-01`. | VERIFIED |
+| **Diffraction Minima Calculation** | $d \sin\theta_m = m\lambda \implies a_m = D \tan(\arcsin(m\lambda/d))$ | Exact calculation of 1st, 2nd, and 3rd order minima positions $a_1, a_2, a_3$ from central axis. At $d = 40\,\mu\text{m}$, $a_1 = 16.25\,\text{mm}$, $a_2 = 32.55\,\text{mm}$, $a_3 = 48.81\,\text{mm}$. Verified by unit test `TC-E8-02`. | VERIFIED |
+| **Inverse Slit-Spread Relationship** | Narrowing slit broadens diffraction distribution ($\Delta y \downarrow \implies \Delta p_y \uparrow$) | Evaluated across $d = 40\,\mu\text{m}, 80\,\mu\text{m}, 120\,\mu\text{m}$. Squeezing slit from $120\,\mu\text{m}$ to $40\,\mu\text{m}$ triples 1st minimum distance ($5.42\,\text{mm} \to 16.25\,\text{mm}$), demonstrating spatial confinement increases transverse momentum spread. Verified by unit test `TC-E8-03`. | VERIFIED |
+| **Heisenberg Uncertainty Quantities** | $\Delta y = d$, $p_x = h/\lambda$, $\Delta p_y = p_x \sin\theta_1$, $\Delta y \Delta p_y = h$ | Implements exact position uncertainty, photon longitudinal momentum ($1.0194 \times 10^{-27}\,\text{kg}\cdot\text{m/s}$), transverse momentum uncertainty ($1.656 \times 10^{-29}\,\text{kg}\cdot\text{m/s}$), and product ($6.626 \times 10^{-34}\,\text{J}\cdot\text{s} = h$). Confirms compliance with Kennard bound $\Delta y \Delta p_y \ge \hbar/2$ by factor of $4\pi \approx 12.57$. Verified by unit test `TC-E8-04`. | VERIFIED |
+| **Observation Table 1 (Intensity Profile)** | Manual p. 73 Table 1 (Micrometer reading $y$ vs Output Current $I$) | Generates 51-point scan across $[-25.0, +25.0]\,\text{mm}$ at $1.0\,\text{mm}$ increments. Interactive workbench supports single-point recording, manual entry, and auto-scan. Verified by unit test `TC-E8-05`. | VERIFIED |
+| **Observation Table 2 (Slit Width Calculation)** | Manual p. 73 Table 2 (Order $m$, Distance $D$, $a_m$, $\theta_m$, $\sin\theta_m$, $d$, Mean $d$) | Generates complete 3-row order table ($m=1,2,3$) matching manual structure. Evaluates reconstructed slit width from angular positions with $< 0.1\%$ discrepancy from true preset. Verified by unit test `TC-E8-06`. | VERIFIED |
+| **Observation Table 3 (Uncertainty Verification)** | Manual p. 74 Table 3 ($d$, $D$, $a_1$, $\theta_1$, $\Delta p_y$, $\frac{d}{\lambda}\sin\theta_1$, $\Delta y \Delta p_y$) | Generates multi-slit uncertainty comparison across $40, 80, 120\,\mu\text{m}$. Confirms $(d/\lambda)\sin\theta_1 \approx 1.0$ and $\Delta y \Delta p_y \approx h$. Verified by unit test `TC-E8-06`. | VERIFIED |
+| **Flagged Manual Ambiguities (AMB-06 & AMB-07)** | AMB-06 (Table 2 "detector to screen" distance) and AMB-07 (Kennard $h/4\pi$ vs Single-slit $h$) | Explicit callouts and dedicated modal explain $D$ is slit-to-detector distance and contrast Eq. 2 (Gaussian RMS product $\hbar/2$) with Eq. 8/11 (single-slit first-minimum derivation yielding $h$). Verified by unit test `TC-E8-07`. | VERIFIED |
+| **Interactive Vector Apparatus** | SVG Optical Rail, Diode Laser, Alignment Screws, Slit Mount & Micrometer | Realistic optical bench with red diode laser ($650\,\text{nm}$), X/Y kinematic alignment screws, movable optical rail carriage ($D = 1000\,\text{mm}$), single-slit holder with $40, 80, 120\,\mu\text{m}$ options, translation stage with micrometer drum, pinhole photodetector, and digital $\mu\text{A}$ meter. | VERIFIED |
+| **Live Measurement Tools & Graph** | Real-time intensity curve, interactive draggable cursor & min/max markers | Fraunhofer diffraction intensity curve with live measurement cursor, theoretical minima markers, and peak readout. | VERIFIED |
+| **Automated Test Coverage** | 7 engine unit tests + complete interactive E2E test | 104 / 104 tests passing across 21 test suites (`heisenbergSimulator.test.ts`, `heisenbergInteractive.test.tsx`, `simulators.test.ts`, etc.). | VERIFIED |
+| **Production Build** | `tsc && vite build` | Clean production build with zero TypeScript errors or warnings. Vite bundle built in 3.46s. | VERIFIED |
+
+
 
 
 

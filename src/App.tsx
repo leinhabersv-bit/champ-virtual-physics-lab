@@ -8,6 +8,7 @@ import { QuantumTunnelingWorkbench } from './components/workbenches/QuantumTunne
 import { SodiumSpectrometerWorkbench } from './components/workbenches/SodiumSpectrometerWorkbench';
 import { PhotodiodeWorkbench } from './components/workbenches/PhotodiodeWorkbench';
 import { ElectronDiffractionWorkbench } from './components/workbenches/ElectronDiffractionWorkbench';
+import { HeisenbergWorkbench } from './components/workbenches/HeisenbergWorkbench';
 import { ScaffoldedWorkbench } from './components/workbenches/ScaffoldedWorkbench';
 import { VivaModal } from './components/dashboard/VivaModal';
 import { Atom, Wifi, WifiOff } from 'lucide-react';
@@ -35,6 +36,7 @@ export function App() {
     'expt-5-sodium-grating',
     'expt-6-photodiode',
     'expt-7-electron-diffraction',
+    'expt-8-heisenberg-slit',
   ]);
 
   // Network offline listener for PWA resilience
@@ -154,6 +156,12 @@ export function App() {
             />
           ) : activeExperiment.id === 'expt-7-electron-diffraction' ? (
             <ElectronDiffractionWorkbench
+              metadata={activeExperiment}
+              onBackToDashboard={() => setActiveExptId(null)}
+              onOpenViva={() => setVivaModalExptId(activeExperiment.id)}
+            />
+          ) : activeExperiment.id === 'expt-8-heisenberg-slit' ? (
+            <HeisenbergWorkbench
               metadata={activeExperiment}
               onBackToDashboard={() => setActiveExptId(null)}
               onOpenViva={() => setVivaModalExptId(activeExperiment.id)}

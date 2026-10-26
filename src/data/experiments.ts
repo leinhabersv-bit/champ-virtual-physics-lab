@@ -268,8 +268,8 @@ export const EXPERIMENTS_DATA: ExperimentMetadata[] = [
     pdfPageRange: 'pp. 66–74',
     printedPageRange: 'pp. 63–71',
     formulaSummary: 'd = m λ / sin θm; Δy = d; Δpy = (h/λ) sin(tan⁻¹(a/D)); (d/λ) sin(tan⁻¹(a/D)) = 1 ⇒ Δpy·Δy = h',
-    isDemoFunctional: false,
-    statusBadge: 'Contract Scaffolded',
+    isDemoFunctional: true,
+    statusBadge: 'Functional Demo',
     tags: ['Cycle 2', 'Quantum Mechanics', 'Uncertainty Principle', 'Laser Diffraction', 'Wave-Particle Duality'],
     inconsistencies: [
       'Manual p. 73 Table header states "Distance between detector and screen D (mm)", whereas D is distance between slit and detector.'
