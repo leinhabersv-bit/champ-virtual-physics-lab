@@ -297,15 +297,31 @@ export const EXPERIMENTS_DATA: ExperimentMetadata[] = [
     pdfPageRange: 'pp. 75–86',
     printedPageRange: 'pp. 72–83',
     formulaSummary: '|ψ⟩ = cos(θ/2)|0⟩ + e^(iϕ)sin(θ/2)|1⟩; CNOT|c,t⟩ = |c, t⊕c⟩; SWAP|a,b⟩ = |b,a⟩; Bell: (|00⟩+|11⟩)/√2',
-    isDemoFunctional: false,
-    statusBadge: 'Contract Scaffolded',
+    isDemoFunctional: true,
+    statusBadge: 'Functional Demo',
     tags: ['Cycle 2', 'Quantum Computing', 'Bloch Sphere', 'Qiskit', 'Entanglement', 'Quantum Gates'],
+    inconsistencies: [
+      'AMB-08: Qiskit little-endian basis ordering (|q1 q0⟩) contrasts with standard textbook basis ordering (|q0 q1⟩) used in manual Eq. 7.',
+      'AMB-09: Manual p. 74 Observation Table repeats θ = -π/2, ϕ = 0 on rows 3 & 4. Clarified with standard cardinal poles.'
+    ],
     vivaQuestions: [
       {
         id: 'v9-1',
         question: 'What is the physical significance of the Bell state (|00⟩ + |11⟩) / √2?',
         answerHint: 'It is a maximally entangled state that cannot be factored into independent single-qubit states (|ψ1⟩ ⊗ |ψ2⟩). Measuring one qubit instantly determines the state of the other.',
         sourcePage: 81
+      },
+      {
+        id: 'v9-2',
+        question: 'Can every two-qubit state be represented in terms of single-qubit Bloch sphere angles (θ, ϕ)?',
+        answerHint: 'No, only product (separable) states can be decomposed into individual Bloch angles. Entangled states possess non-zero concurrence and their reduced states are mixed states located inside the Bloch sphere.',
+        sourcePage: 80
+      },
+      {
+        id: 'v9-3',
+        question: 'How do the operations of CNOT and SWAP gates differ in symmetry and entanglement generation?',
+        answerHint: 'SWAP is symmetric and merely exchanges the state vectors of two wires without generating entanglement from separable inputs. CNOT is asymmetric, acting conditionally based on control, allowing the creation of entangled states from product superpositions.',
+        sourcePage: 83
       }
     ]
   }

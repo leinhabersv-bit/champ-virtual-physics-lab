@@ -194,6 +194,27 @@
 | **Automated Test Coverage** | 7 engine unit tests + complete interactive E2E test | 104 / 104 tests passing across 21 test suites (`heisenbergSimulator.test.ts`, `heisenbergInteractive.test.tsx`, `simulators.test.ts`, etc.). | VERIFIED |
 | **Production Build** | `tsc && vite build` | Clean production build with zero TypeScript errors or warnings. Vite bundle built in 3.46s. | VERIFIED |
 
+---
+
+## 12. Experiment 9: Single-Qubit States & Two-Qubit Quantum Gates Verification Log
+
+| Component | Target Spec | Implementation & Evidence | Status |
+|---|---|---|---|
+| **Source Audit (PDF pp. 75–86)** | Visual inspection of all 12 rendered page images (printed pp. 72–83) | Audited single-qubit theory, Bloch sphere equation $|\psi\rangle = \cos(\theta/2)|0\rangle + e^{i\phi}\sin(\theta/2)|1\rangle$, Pauli gates $X, Y, Z$, Hadamard $H$, two-qubit Hilbert space $\mathbb{C}^4$, $\text{CNOT}|c, t\rangle = |c, t \oplus c\rangle$, $\text{SWAP}|a, b\rangle = |b, a\rangle$, and all 5 observation tables. Extracted equations without substitution. | VERIFIED |
+| **Complex Wave Mechanics Engine** | 4D complex state vectors, unitary operators & normalization | `src/engine/quantumGatesSimulator.ts`: Exact linear algebra engine supporting arbitrary 1-qubit and 2-qubit complex operations. Enforces $\sum |c_j|^2 = 1.0000$. Verified by unit test `TC-E9-01`. | VERIFIED |
+| **Single-Qubit Gate Unitaries & Involutory Actions** | $X^2 = Y^2 = Z^2 = H^2 = I$, Pauli rotations on Bloch sphere | Implements 2x2 complex matrices for $I, X, Y, Z, H, S, T$. Verifies $X|0\rangle = |1\rangle$, $Z|+\rangle = |-\rangle$, $H|0\rangle = |+\rangle$, $H|+\rangle = |0\rangle$. Verified by unit test `TC-E9-02`. | VERIFIED |
+| **Two-Qubit CNOT Truth Table & Control Reversal** | $\text{CNOT}|c, t\rangle = |c, t \oplus c\rangle$ for both orientations ($0 \to 1$ and $1 \to 0$) | Implements full 4x4 unitary representations. At $c=0, t=1$: $|00\rangle \to |00\rangle, |01\rangle \to |01\rangle, |10\rangle \to |11\rangle, |11\rangle \to |10\rangle$. Reversing control flips target wire conditionally. Verified by unit tests `TC-E9-03` and `TC-E9-04`. | VERIFIED |
+| **Symmetric SWAP Gate** | $\text{SWAP}|a, b\rangle = |b, a\rangle$ | Implements SWAP permutation matrix. Exchanges wires $|01\rangle \leftrightarrow |10\rangle$ while preserving symmetric $|00\rangle, |11\rangle$. Verified by unit test `TC-E9-05`. | VERIFIED |
+| **Entanglement & Bell State Generation** | Maximal entanglement from product state ($C = 1.0000$, $\text{Tr}(\rho^2) = 0.5$) | Applying $H$ on $q_0$ then $\text{CNOT}_{0 \to 1}$ on $|00\rangle$ produces Bell state $|\Phi^+\rangle = \frac{|00\rangle + |11\rangle}{\sqrt{2}}$. Concurrence $C = 1.0000$. Reduced density matrices of individual qubits become maximally mixed. Verified by unit test `TC-E9-06`. | VERIFIED |
+| **Observation Tables (1–5) Parity** | Manual pp. 74, 76, 77, 81, 82 Tables (Bloch, X/Y/Z, H, 2-qubit angles, CNOT/SWAP benchmark) | Implements all 5 tables from manual with full 10 benchmark rows each. Correctly identifies 5 entangled states vs 5 product states in Table 4. CSV export supported for each table. Verified by unit test `TC-E9-07`. | VERIFIED |
+| **Flagged Manual Ambiguities (AMB-08 & AMB-09)** | AMB-08 (Qiskit little-endian basis ordering) & AMB-09 (duplicate rows on p. 74) | Explicit basis toggle in circuit UI switches between Textbook $|q_0 q_1\rangle$ and Qiskit $|q_1 q_0\rangle$. Modal provides full explanation. Verified by unit test `TC-E9-08`. | VERIFIED |
+| **Interactive Vector Apparatus** | SVG Bloch Sphere & Interactive 2-Qubit Circuit Canvas | 3D-projected vector Bloch sphere with polar $\theta$ and azimuthal $\phi$ sliders and cardinal presets. 2-wire multi-step circuit builder with drag/drop/select gate palette ($H, X, Y, Z, \text{CNOT}, \text{SWAP}$). | VERIFIED |
+| **Projective Measurement Simulation** | 1024-shot Monte Carlo quantum measurement in Z-basis | Renders live histogram distribution of observed counts across $|00\rangle, |01\rangle, |10\rangle, |11\rangle$ against theoretical probability bars. | VERIFIED |
+| **Faithful Python 3 / Qiskit 1.x Script** | Copyable Python code using `qiskit`, `qiskit_aer`, `matplotlib` | Provides complete script reproducing Parts 1, 2, 3 with explicit banner explaining local deterministic browser execution. | VERIFIED |
+| **Automated Test Coverage** | 9 engine unit tests + complete interactive E2E user journey test | 114 / 114 tests passing across 23 test suites (`quantumGatesSimulator.test.ts`, `quantumInteractive.test.tsx`, `simulators.test.ts`, etc.). | VERIFIED |
+| **Production Build** | `tsc && vite build` | Clean compilation with zero TypeScript errors or warnings. Vite bundle built in 3.61s. | VERIFIED |
+
+
 
 
 
