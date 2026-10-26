@@ -69,3 +69,21 @@
 | **Automated Test Coverage** | Netlist, table parity, unit, and interactive E2E | 43 / 43 tests passing across 7 suites (`circuitNetlist.test.ts`, `solarCellTables.test.ts`, `solarCellInteractive.test.tsx`, etc.) | VERIFIED |
 | **Production Build** | `tsc && vite build` | Clean build with zero errors, gzip bundle 161.56 kB | VERIFIED |
 
+---
+
+## 5. Experiment 2: Mercury Lamp Spectral Wavelengths (Normal Incidence) Verification Log
+
+| Component | Target Spec | Implementation & Evidence | Status |
+|---|---|---|---|
+| **Circular Modular Arithmetic Engine** | Circular angle difference with 0°/360° wraparound | `src/engine/mercuryGratingEngine.ts`: `circularDistance(a, b)` computes shortest arc across 0°/360°; `normalizeAngle(deg)` maps to [0, 360) | VERIFIED |
+| **Spectrometer Scale & Least Count** | Manual p. 19 & p. 36 ($1\text{ MSD} = 0.5^\circ$, $30\text{ VSD} = 29\text{ MSD}$, $\text{LC} = 1'$) | MSR, VSC, TR decomposition: $TR = MSR + (VSC \times 1')$; DMS conversion format (e.g. $110^\circ 30' + 9' = 110^\circ 39'$) | VERIFIED |
+| **Grating Element Conversion** | Manual p. 36: $(e+d) = \frac{2.54 \times 10^{-2}}{N}\text{ m}$ | Computes lines/m ($590,551\text{ lines/m}$) and $(e+d) = 1.69333 \times 10^{-6}\text{ m}$ for $15,000\text{ LPI}$ | VERIFIED |
+| **Observation Table Parity** | Manual p. 36: 1st order spectrum table (4 colors $\times$ 2 verniers $V_1, V_2$ = 8 rows) | Left (a) and Right (b) MSR, VSC, TR, $2\theta = |a - b|$, $\theta = (a - b)/2$, Mean $\theta$, Calculated $\lambda$ | VERIFIED |
+| **Mercury Reference Wavelengths** | Manual p. 36 & p. 37: Blue ($4693\text{ \AA}$), Green ($5461\text{ \AA}$), Yellow ($5770\text{ \AA}$), Red ($6238\text{ \AA}$) | Recovered wavelengths: Blue ($4691\text{ \AA}$, $0.04\%$), Green ($5462\text{ \AA}$, $0.01\%$), Yellow ($5768\text{ \AA}$, $0.03\%$), Red ($6238\text{ \AA}$, $0.00\%$) | VERIFIED |
+| **Interactive Vector Apparatus** | SVG Spectrometer Chassis & Eyepiece Reticle | Rotating telescope arm, collimator with slit adjustment screw, transmission grating on spirit-leveled prism table, 4° FOV ocular reticle with centered crosshairs | VERIFIED |
+| **Dual Vernier Magnifiers** | Magnifier views for $V_1$ and $V_2$ ($180^\circ$ offset) | Live readout of MSR (degrees + minutes), VSC (0–29 div), TR, and DMS | VERIFIED |
+| **Normal Incidence Alignment Wizard** | 4-step sequence from manual pp. 34–35 | Direct ray (180°) $\to$ $90^\circ$ swing $\to$ $45^\circ$ reflection $\to$ $45^\circ$ normal setting, plus one-click auto-align | VERIFIED |
+| **Automated Test Coverage** | Unit tests + interactive integration test | 53 / 53 tests passing across 9 test suites (`mercuryGratingEngine.test.ts`, `mercurySpectrometerInteractive.test.tsx`, etc.) | VERIFIED |
+| **Production Build** | `tsc && vite build` | Clean compilation with zero errors, gzip bundle 170.96 kB | VERIFIED |
+
+
