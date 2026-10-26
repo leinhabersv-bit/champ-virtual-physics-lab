@@ -3,6 +3,7 @@ import { EXPERIMENTS_DATA } from './data/experiments';
 import { Dashboard } from './components/dashboard/Dashboard';
 import { SolarCellWorkbench } from './components/workbenches/SolarCellWorkbench';
 import { MercurySpectrometerWorkbench } from './components/workbenches/MercurySpectrometerWorkbench';
+import { LedPlanckWorkbench } from './components/workbenches/LedPlanckWorkbench';
 import { ScaffoldedWorkbench } from './components/workbenches/ScaffoldedWorkbench';
 import { VivaModal } from './components/dashboard/VivaModal';
 import { Atom, Wifi, WifiOff } from 'lucide-react';
@@ -111,6 +112,12 @@ export function App() {
             />
           ) : activeExperiment.id === 'expt-2-mercury-grating' ? (
             <MercurySpectrometerWorkbench
+              metadata={activeExperiment}
+              onBackToDashboard={() => setActiveExptId(null)}
+              onOpenViva={() => setVivaModalExptId(activeExperiment.id)}
+            />
+          ) : activeExperiment.id === 'expt-3-led-planck' ? (
+            <LedPlanckWorkbench
               metadata={activeExperiment}
               onBackToDashboard={() => setActiveExptId(null)}
               onOpenViva={() => setVivaModalExptId(activeExperiment.id)}

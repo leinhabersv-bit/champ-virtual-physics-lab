@@ -86,4 +86,22 @@
 | **Automated Test Coverage** | Unit tests + interactive integration test | 53 / 53 tests passing across 9 test suites (`mercuryGratingEngine.test.ts`, `mercurySpectrometerInteractive.test.tsx`, etc.) | VERIFIED |
 | **Production Build** | `tsc && vite build` | Clean compilation with zero errors, gzip bundle 170.96 kB | VERIFIED |
 
+---
+
+## 6. Experiment 3: Planck Constant via Semiconductor LEDs Verification Log
+
+| Component | Target Spec | Implementation & Evidence | Status |
+|---|---|---|---|
+| **Semiconductor Conduction Engine** | Shockley diode forward bias with series ohmic limit | `src/engine/ledPlanckSimulator.ts`: Sub-threshold exponential conduction ($V_d < V_B$) transitions into linear conduction governed by internal die resistance ($25\,\Omega$) and external limiter ($10-100\,\Omega$). Clamped safely at $\le 2900\,\mu\text{A}$ per manual p. 42. | VERIFIED |
+| **Source Wavelengths & SI Units** | Exact manual wavelengths & SI physical constants | Manual pp. 38, 43, 44: Blue ($470\,\text{nm}$), Yellow ($500\,\text{nm}$), Green ($565\,\text{nm}$), Red ($660\,\text{nm}$). Wavelengths converted to metres ($10^{-9}\,\text{m}$); $e = 1.602 \times 10^{-19}\,\text{C}$, $c = 2.998 \times 10^8\,\text{m/s}$, $h = 6.626 \times 10^{-34}\,\text{J}\cdot\text{s}$. | VERIFIED |
+| **Circuit Netlist Topology Analyzer** | Directed graph analysis of breadboard wiring | `src/engine/ledPlanckNetlist.ts`: Graph adjacency solver detects `VALID_FORWARD_BIAS`, `REVERSED_LED_POLARITY`, `ERROR_AMMETER_PARALLEL`, `ERROR_VOLTMETER_SERIES`, `WARNING_MISSING_LIMITER`, `OPEN_CIRCUIT_DISCONNECTED`, and meter polarity inversion. | VERIFIED |
+| **Observation Table 1 Parity** | Manual p. 43: 15 voltage rows per LED | 15 discrete points per LED (Blue, Yellow, Green, Red = 60 points) spanning sub-threshold, knee, and linear conduction regimes with Sl. No, potentiometer setting (%), applied voltage, diode voltage $V_d$, and current $I\,(\mu\text{A})$. | VERIFIED |
+| **Linear Tangent Fitting & Barrier $V_B$** | Extrapolation on linear region to X-axis intercept | `fitLinearTangent()`: Least-squares regression $I = m \cdot V + c$, $V$-intercept $V_B = -c/m$. Enforces $R^2 \ge 0.90$ and $m > 0$; strictly rejects sub-threshold/non-linear points without fabricating intercepts. | VERIFIED |
+| **Observation Table 2 Parity** | Manual p. 44: Summary across LEDs | Computes direct $h = e \cdot V_B \cdot \lambda / c$ for each LED, error percentage vs $6.626 \times 10^{-34}\,\text{J}\cdot\text{s}$, and mean $\bar{h}$ across all 4 LEDs. | VERIFIED |
+| **Graphical Planck Constant ($V_B$ vs $1/\lambda$)** | Manual p. 41: Linear slope $\Delta V_B / \Delta(1/\lambda) = hc/e$ | Linear regression on $V_B$ vs $1/\lambda$ ($R^2 \ge 0.99$), extracting $h_{\text{graph}} = \text{Slope} \cdot e / c$ with comparison to accepted value. | VERIFIED |
+| **Interactive SVG Vector Workbench** | Full interactive circuit on breadboard | 3V DC regulated supply, selectable limiter ($10\,\Omega, 47\,\Omega, 100\,\Omega$), rotary potentiometer dial with step nudges, glowing color-matched LED dome, parallel voltmeter, series microammeter, interactive wire snapping. | VERIFIED |
+| **Pedagogical Features** | Guided, Exam, Viva, Calculations drawer | 4-step guided progression, exam mode with rubric, KaTeX sample calculation drawer, and CSV export for Table 1 and Table 2. | VERIFIED |
+| **Automated Test Coverage** | Netlist, engine unit tests, and full interactive E2E | 62 / 62 tests passing across 11 test suites (`ledPlanckEngine.test.ts`, `ledPlanckInteractive.test.tsx`, `circuitNetlist.test.ts`, `mercuryGratingEngine.test.ts`, etc.). | VERIFIED |
+| **Production Build** | `tsc && vite build` | Clean compilation with zero TypeScript or Vite bundle errors; production bundle verified. | VERIFIED |
+
 
