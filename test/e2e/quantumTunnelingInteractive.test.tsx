@@ -16,6 +16,10 @@ describe('QuantumTunnelingWorkbench Interactive User Journey (Experiment 4)', ()
     window.URL.createObjectURL = mockCreateObjectURL;
     window.URL.revokeObjectURL = mockRevokeObjectURL;
 
+    // Mock HTMLAnchorElement click to prevent jsdom navigation error
+    const originalAnchorClick = HTMLAnchorElement.prototype.click;
+    HTMLAnchorElement.prototype.click = vi.fn();
+
     // Mock clipboard writeText
     Object.assign(navigator, {
       clipboard: {
@@ -195,5 +199,7 @@ describe('QuantumTunnelingWorkbench Interactive User Journey (Experiment 4)', ()
     const backBtn = screen.getByRole('button', { name: /Return to Dashboard/i });
     fireEvent.click(backBtn);
     expect(handleBack).toHaveBeenCalled();
+
+    HTMLAnchorElement.prototype.click = originalAnchorClick;
   });
 });

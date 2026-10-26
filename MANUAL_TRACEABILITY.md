@@ -22,15 +22,15 @@
 | **12–14** | 9–11 | **Preparatory Tool II: Vernier Calipers** | Preparatory Module | **EXCLUDED** from Expts 1–9 |
 | **15–17** | 12–14 | **Preparatory Tool III: Travelling Microscope** | Preparatory Module | **EXCLUDED** from Expts 1–9 |
 | **18–21** | 15–18 | **Preparatory Tool IV: Spectrometer** | Preparatory Module | **EXCLUDED** from Expts 1–9 |
-| **22–32** | 19–29 | **Experiment 1: Solar Cell Characteristics & Circuits** | CHAMP Cycle 1 | **Included (Primary Demo Workbench)** |
-| **33–37** | 30–34 | **Experiment 2: Mercury Light Grating (Normal Incidence)** | CHAMP Cycle 1 | **Included (Scaffolded Contract)** |
-| **38–44** | 35–41 | **Experiment 3: Planck's Constant from Semiconductor LED** | CHAMP Cycle 1 | **Included (Scaffolded Contract)** |
-| **45–52** | 42–49 | **Experiment 4: Quantum Tunneling Simulation** | CHAMP Cycle 1 | **Included (Scaffolded Contract)** |
-| **53–55** | 50–52 | **Experiment 5: Sodium Light Grating (Minimum Deviation)** | CHAMP Cycle 2 | **Included (Scaffolded Contract)** |
-| **56–59** | 53–56 | **Experiment 6: Photodiode I–V Characteristics** | CHAMP Cycle 2 | **Included (Scaffolded Contract)** |
-| **60–65** | 57–62 | **Experiment 7: Electron Diffraction & de Broglie Wavelength** | CHAMP Cycle 2 | **Included (Scaffolded Contract)** |
-| **66–74** | 63–71 | **Experiment 8: Heisenberg Uncertainty Principle (Single Slit)** | CHAMP Cycle 2 | **Included (Scaffolded Contract, Visual Verified)** |
-| **75–86** | 72–83 | **Experiment 9: Quantum Gates & Two-Qubit Simulation** | CHAMP Cycle 2 | **Included (Scaffolded Contract)** |
+| **22–32** | 19–29 | **Experiment 1: Solar Cell Characteristics & Circuits** | CHAMP Cycle 1 | **Included (Full Production Workbench - Verified)** |
+| **33–37** | 30–34 | **Experiment 2: Mercury Light Grating (Normal Incidence)** | CHAMP Cycle 1 | **Included (Full Production Workbench - Verified)** |
+| **38–44** | 35–41 | **Experiment 3: Planck's Constant from Semiconductor LED** | CHAMP Cycle 1 | **Included (Full Production Workbench - Verified)** |
+| **45–52** | 42–49 | **Experiment 4: Quantum Tunneling Simulation** | CHAMP Cycle 1 | **Included (Full Production Workbench - Verified)** |
+| **53–55** | 50–52 | **Experiment 5: Sodium Light Grating (Minimum Deviation)** | CHAMP Cycle 2 | **Included (Full Production Workbench - Verified)** |
+| **56–59** | 53–56 | **Experiment 6: Photodiode I–V Characteristics** | CHAMP Cycle 2 | **Included (Full Production Workbench - Verified)** |
+| **60–65** | 57–62 | **Experiment 7: Electron Diffraction & de Broglie Wavelength** | CHAMP Cycle 2 | **Included (Full Production Workbench - Verified)** |
+| **66–74** | 63–71 | **Experiment 8: Heisenberg Uncertainty Principle (Single Slit)** | CHAMP Cycle 2 | **Included (Full Production Workbench - Verified)** |
+| **75–86** | 72–83 | **Experiment 9: Quantum Gates & Two-Qubit Simulation** | CHAMP Cycle 2 | **Included (Full Production Workbench - Verified)** |
 
 ---
 
@@ -235,3 +235,5 @@ The following ambiguities and typographic errors exist in the official manual. *
 | **Expt 7** | PDF p. 64 | "Outer diameter: d=0.213nm" | $d = 0.213\,\text{nm}$ is the interplanar lattice spacing $d_{100}$ of graphite microcrystals, not the diameter of the diffraction ring $D$. | Separated in simulator: lattice spacing $d = 0.213\,\text{nm}$, ring diameter $D \approx 20–35\,\text{mm}$. |
 | **Expt 7** | PDF p. 64 | Step 6: "changing the voltage by a difference of 0.5V" | Electron diffraction tube requires high anode voltage ($2.5\,\text{kV}–5.0\,\text{kV}$). Stepping by $0.5\,\text{V}$ has zero discernible effect. | Step is calibrated to $0.5\,\text{kV}$ ($500\,\text{V}$) with source discrepancy note. |
 | **Expt 8** | PDF p. 73 | Table header: "Distance between the detector and screen, D (mm)" | In the single-slit laser apparatus, the detector *is* the screen; distance $D$ is between slit and detector (screen). | Documented and corrected in UI table as "Distance between slit and detector $D$ (mm)". |
+| **Expt 9** | PDF p. 78 & 80 | Circuit & statevector notation conflates textbook $|q_0 q_1\rangle$ and Qiskit $|q_1 q_0\rangle$ | Qiskit uses little-endian qubit ordering where $q_0$ is the least significant bit (rightmost), whereas textbook linear algebra uses standard index order $|q_0 q_1\rangle$. | Dual-basis toggle provided in UI: allows switching between Textbook order $|q_0 q_1\rangle$ and Qiskit order $|q_1 q_0\rangle$ with live pedagogical explanation. |
+| **Expt 9** | PDF p. 74 | Table on printed p. 74 contains duplicate rows 3 & 4 with identical input angles $(\theta = -\pi/2, \phi = 0)$ | Duplicate rows in manual observation table print the exact same coordinates twice instead of probing distinct Bloch hemisphere positions. | De-duplicated in software: provides distinct cardinal presets on Bloch sphere ($|0\rangle, |1\rangle, |+\rangle, |-\rangle, |+i\rangle, |-i\rangle$) with alert badge explaining source duplication. |

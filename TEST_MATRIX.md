@@ -85,14 +85,15 @@
 
 ---
 
-## 5. Per-Experiment End-to-End Test Skeletons
+## 5. Per-Experiment End-to-End Interactive Test Suites (100% Implemented)
 
-- `test/e2e/expt1-solar-cell.spec.ts`: Load page $\to$ Guided mode $\to$ Wire breadboard $\to$ Set distance $\to$ Step resistance $100\,\Omega \dots 10\,\text{k}\Omega \to$ Check $P_{max} \to$ Validate efficiency.
-- `test/e2e/expt2-hg-spectrometer.spec.ts`: Calibrate spectrometer $V_1, V_2 \to$ Align normal incidence $\to$ Record spectral lines $\to$ Check computed wavelengths vs mercury standard.
-- `test/e2e/expt3-led-planck.spec.ts`: Select LED color $\to$ Vary potentiometer $\to$ Measure forward $I$-$V \to$ Extrapolate $V_B \to$ Fit $V_B$ vs $1/\lambda \to$ Verify $h$.
-- `test/e2e/expt4-tunneling.spec.ts`: Set $E, V_0, a \to$ Run simulation $\to$ Observe decaying $\psi(x) \to$ Validate $T$ matches closed-form solution.
-- `test/e2e/expt5-na-spectrometer.spec.ts`: Align spectrometer $\to$ Locate minimum deviation angle for $D_1, D_2 \to$ Verify doublet separation.
-- `test/e2e/expt6-photodiode.spec.ts`: Measure dark current $\to$ Illuminate at $10\,\text{cm} \to$ Measure reverse $I$-$V \to$ Compute responsivity $R$.
-- `test/e2e/expt7-electron-diffraction.spec.ts`: Turn on heater $\to$ Set anode voltage $4\,\text{kV} \to$ Measure ring diameters $D_1, D_2 \to$ Compare Bragg vs de Broglie wavelength.
-- `test/e2e/expt8-heisenberg-slit.spec.ts`: Align laser to pinhole $\to$ Insert single slit $\to$ Transverse micrometer scan $\to$ Fit diffraction envelope $\to$ Verify $\Delta p_y \Delta y = h$.
-- `test/e2e/expt9-quantum-computing.spec.ts`: Initialize state $\to$ Apply Pauli/Hadamard gates $\to$ Check Bloch coordinates $\to$ Apply CNOT and verify Bell entanglement.
+- `test/e2e/solarCellInteractive.test.tsx`: Load page $\to$ Guided mode $\to$ Wire breadboard $\to$ Set distance $\to$ Step resistance $100\,\Omega \dots 10\,\text{k}\Omega \to$ Check $P_{max} \to$ Validate efficiency.
+- `test/e2e/mercurySpectrometerInteractive.test.tsx`: Calibrate spectrometer $V_1, V_2 \to$ Align normal incidence $\to$ Record spectral lines $\to$ Check computed wavelengths vs mercury standard.
+- `test/e2e/ledPlanckInteractive.test.tsx`: Select LED color $\to$ Vary potentiometer $\to$ Measure forward $I$-$V \to$ Extrapolate $V_B \to$ Fit $V_B$ vs $1/\lambda \to$ Verify $h$.
+- `test/e2e/quantumTunnelingInteractive.test.tsx`: Set $E, V_0, a \to$ Run simulation $\to$ Observe decaying $\psi(x) \to$ Validate $T$ matches closed-form solution $\to$ Test Python/.ipynb export.
+- `test/e2e/sodiumSpectrometerInteractive.test.tsx`: Align spectrometer $\to$ Locate minimum deviation angle for $D_1, D_2 \to$ Verify doublet separation $\to$ Record verniers.
+- `test/e2e/photodiodeInteractive.test.tsx`: Measure dark current $\to$ Illuminate at $10\,\text{cm} \to$ Measure reverse $I$-$V \to$ Compute responsivity $R \to$ Test shield toggle.
+- `test/e2e/electronDiffractionInteractive.test.tsx`: Turn on heater $\to$ Set anode voltage $4\,\text{kV} \to$ Measure ring diameters $D_1, D_2 \to$ Compare Bragg vs de Broglie wavelength.
+- `test/e2e/heisenbergInteractive.test.tsx`: Align laser to pinhole $\to$ Insert single slit $\to$ Transverse micrometer scan $\to$ Fit diffraction envelope $\to$ Verify $\Delta p_y \Delta y = h$.
+- `test/e2e/quantumInteractive.test.tsx`: Initialize state $\to$ Apply Pauli/Hadamard gates $\to$ Check Bloch coordinates $\to$ Apply CNOT and verify Bell entanglement $\to$ Test Qiskit script export.
+- `test/e2e/experiments.spec.ts`: Master multi-experiment regression suite verifying mathematical invariants across all 9 experiments.

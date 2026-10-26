@@ -69,8 +69,8 @@ export const EXPERIMENTS_DATA: ExperimentMetadata[] = [
     pdfPageRange: 'pp. 33–37',
     printedPageRange: 'pp. 30–34',
     formulaSummary: '(e+d) sin θ = n λ ⇒ λ = (e+d) sin θ / n; (e+d) = 2.54×10⁻² / N',
-    isDemoFunctional: false,
-    statusBadge: 'Contract Scaffolded',
+    isDemoFunctional: true,
+    statusBadge: 'Functional Demo',
     tags: ['Cycle 1', 'Wave Optics', 'Diffraction Grating', 'Spectroscopy', 'Mercury Lamp'],
     precautions: [
       'Never touch the ruled surface of the transmission grating.',
