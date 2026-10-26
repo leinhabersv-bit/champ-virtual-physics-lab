@@ -1,0 +1,16 @@
+{
+  "name": "CHAMP Virtual Physics Lab",
+  "short_name": "CHAMP V-Lab",
+  "description": "Engineering Physics (BAPHY105) Virtual Laboratory - VIT Chennai",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192' fill='%236366f1'><rect width='192' height='192' rx='32' fill='%230f172a'/><circle cx='96' cy='96' r='48' fill='none' stroke='%236366f1' stroke-width='12'/><circle cx='96' cy='96' r='18' fill='%23818cf8'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
